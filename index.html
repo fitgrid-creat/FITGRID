@@ -1,8 +1,3 @@
-好的，我帮你把代码里的这个“Generate My Plan”按钮删除了。
-
-修改方法很简单，直接删除了按钮对应的 HTML 代码即可。下面是修改后的完整代码：
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -279,6 +274,12 @@
                     </div>
                     <div class="premium-card p-6"><h3 class="font-bold text-sm mb-4">System Focus</h3><div class="chart-container h-[180px]"><canvas id="microChart"></canvas></div></div>
                     <div class="premium-card p-6" id="energy-guide"></div>
+                    
+                   <button onclick="switchView('plan')" class="hidden w-full py-4 mt-2 rounded-xl bg-white text-black font-bold text-base active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg">
+    Generate My Plan <i data-lucide="arrow-right" class="w-4 h-4"></i>
+</button>
+
+                    
                 </div>
             </main>
 
@@ -879,4 +880,568 @@ function updateTimeline(idx) {
                         <div class="flex-1 min-w-0 relative z-10">
                             <div class="flex items-center gap-1.5 mb-1">
                                 <i data-lucide="${c.icon}" class="w-4 h-4 drop-shadow" style="color:${c.color}"></i>
-                                <p class="text-[10px] font-bold uppercase
+                                <p class="text-[10px] font-bold uppercase tracking-wide" style="color:${c.color}">${ses.type}</p>
+                            </div>
+                            <p class="text-sm font-semibold text-white truncate drop-shadow-md">${ses.title}</p>
+                        </div>
+
+                        <button onclick="toggleScheduledCourse('${day.date}', '${ses.title}', '${ses.time}', '${ses.type}', '${c.color}', '${c.icon}')" 
+                            class="px-4 py-2 rounded-full text-[11px] font-bold transition-all shrink-0 active:scale-95 relative z-10 ${isSel ? 'shadow-sm border' : 'bg-black/50 text-gray-300 border border-white/5 hover:text-white backdrop-blur-md'}" 
+                            style="${isSel ? `background-color: ${c.color}33; color: ${c.color}; border-color: ${c.color}4D;` : ''}">
+                            ${isSel ? 'Booked' : 'Book'}
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }
+    });
+    panel.innerHTML = has ? html : `<div class="flex flex-col items-center justify-center py-10 opacity-50"><i data-lucide="coffee" class="w-8 h-8 mb-2"></i><p class="text-[10px] font-bold text-textMuted uppercase">Rest Day</p></div>`;
+    refreshIcons({ root: panel });
+}
+
+function updateHomeSummary() {
+    if (!currentCell || !targetCell) return;
+    
+    const es = document.getElementById('home-empty-state');
+    const vc = document.getElementById('home-vector-card');
+    const vp = document.getElementById('home-vector-path');
+    const watermark = document.getElementById('home-watermark-target');
+    
+    if (es) es.classList.add('hidden');
+    if (vc) vc.classList.remove('hidden');
+    if (vp) vp.innerText = `${currentCell.name}  →  ${targetCell.name}`;
+    
+    // 动态根据性别修改巨型 Target 水印的颜色
+    if (watermark) watermark.style.color = themes[currentGender].glow;
+    
+    const tag = document.getElementById('home-gender-tag');
+    if (tag) { 
+        tag.innerText = currentGender; 
+        tag.style.color = themes[currentGender].glow; 
+        tag.style.background = themes[currentGender].glowDim; 
+    }
+}
+
+    document.getElementById('reset-btn').onclick = () => {
+    currentCell = targetCell = null; 
+    initGrid();
+    
+    ['current-display', 'target-display'].forEach(id => { 
+        const el = document.getElementById(id);
+        if(el) { el.innerText = '---'; el.style.color = ''; }
+    });
+    
+    ['exception-banner', 'prescription-section', 'reset-btn', 'home-vector-card'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.classList.add('hidden');
+    });
+    
+    const es = document.getElementById('home-empty-state');
+    if(es) es.classList.remove('hidden');
+    
+    updateCardIcon('current-icon-container', 'circle-dashed', 'rgba(255,255,255,0.03)');
+    updateCardIcon('target-icon-container', 'circle-dashed', 'rgba(255,255,255,0.03)');
+    
+    selectedCourses = []; 
+    const hc = document.getElementById('home-course-card');
+    if(hc) hc.classList.add('hidden');
+    
+    const ms1 = document.getElementById('matrix-step-1');
+    if(ms1) ms1.classList.remove('hidden');
+    
+    const vt = document.getElementById('vector-main-title');
+    if(vt) vt.innerText = 'Calibration';
+    
+    const ma = document.getElementById('matrix-arrow');
+    if(ma) ma.style.color = '';
+    
+    saveToFirestore();
+};
+
+// 修复点：调整了教练姓名顺序，将姓氏 (Last Name) 放在后方
+const coachesData = [
+    { id: 'c1', name: 'Wei Li', avatar: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80', desc: 'Focuses on practical strength for daily life. Great for beginners looking to build a sustainable routine without intimidating equipment.', tags: ['Strength', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
+    { id: 'c2', name: 'Siyu Chen', avatar: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=150&q=80', desc: 'Helps you fix your posture and lose fat effectively. She provides easy-to-follow cardio plans you can do right in your living room.', tags: ['Fat Loss', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
+    { id: 'c3', name: 'Hao Wang', avatar: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=150&q=80', desc: 'Friendly mobility coach who helps you recover from sitting at a desk all day. Focuses on stretching and moving pain-free.', tags: ['Recovery', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
+    { id: 'c4', name: 'Jian Zhao', avatar: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=150&q=80', desc: 'Passionate about body recomposition. He breaks down complex exercises into simple steps to help you tone up safely.', tags: ['Hypertrophy', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
+    { id: 'c5', name: 'Min Zhang', avatar: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=150&q=80', desc: 'Energetic HIIT instructor who keeps you motivated. Expect sweaty, fun sessions that get your heart rate up quickly.', tags: ['HIIT', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
+    { id: 'c6', name: 'Yue Lin', avatar: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=150&q=80', desc: 'Gentle yoga and core instructor. Perfect for winding down after a long day with minimal space needed.', tags: ['Yoga', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] }
+];
+
+const coachSchedules = {
+    'c1': { '23': ['09:00', '10:00', '14:00'], '24': ['11:00', '14:00', '16:00'], '26': ['08:00', '09:00'] },
+    'c2': { '22': ['08:00'], '24': ['13:00', '14:00', '15:00'], '25': ['09:00', '18:00'] },
+    'c3': { '22': ['07:00', '08:00'], '24': ['10:00', '14:00'], '27': ['14:00', '15:00', '16:00'] },
+    'c4': { '24': ['08:00', '09:00', '17:00', '18:00'], '25': ['12:00'] },
+    'c5': { '23': ['10:00', '11:00'], '24': ['15:00', '16:00', '17:00'], '26': ['19:00'] },
+    'c6': { '24': ['07:00', '12:00', '19:00'], '28': ['08:00', '09:00'] }
+};
+
+let currentSelectedCoach = null;
+let currentSelectedDate = null;
+let currentSelectedSlot = null;
+let currentBooking = null;
+
+// 添加全局智能跳转逻辑
+window.handleHomeCoachClick = function() {
+    if (currentBooking && currentBooking.coach) {
+        openCoachDetail(currentBooking.coach);
+        // 自动定位并展开已预约的日期和时间不需要在这里使用 setTimeout
+        // openCoachDetail 内部已经集成了对已预约记录的自动感知与点击逻辑
+    } else {
+        switchView('coach');
+    }
+};
+
+// 添加全局取消预约函数
+window.cancelBooking = function(event) {
+    if (event) event.stopPropagation(); 
+    currentBooking = null;
+    updateHomeBooking();
+    
+    // 如果当前停留在教练详情页，同步刷新并清空已选择的状态
+    if (document.getElementById('view-coach-detail').classList.contains('view-active')) {
+        if (currentSelectedDate) {
+            const cc = document.getElementById('coach-calendar');
+            const activeBtn = Array.from(cc.children).find(c => c.classList.contains('bg-white'));
+            if (activeBtn) selectCoachDate(currentSelectedDate, activeBtn);
+        }
+        updateBookButton();
+    }
+    refreshIcons();
+};
+
+function updateHomeBooking() {
+    const cd = document.getElementById('home-coach-default');
+    const cb = document.getElementById('home-coach-booked');
+    const cp = document.getElementById('home-coach-status-pill');
+    const cardOuter = document.getElementById('home-coach-card-outer');
+    const watermark = document.getElementById('home-coach-watermark');
+    const timeText = document.getElementById('home-coach-time');
+    const avatar = document.getElementById('home-coach-avatar');
+
+    if (!currentBooking) {
+        if (cd) cd.classList.remove('hidden');
+        if (cb) cb.classList.add('hidden');
+        if (cp) cp.classList.add('hidden');
+        if (cardOuter) cardOuter.style.background = '';
+        if (watermark) watermark.style.color = 'rgba(255,255,255,0.05)';
+        return;
+    }
+    
+    if (cd) cd.classList.add('hidden');
+    if (cb) cb.classList.remove('hidden');
+    
+    // 根据类型赋予全卡片的视觉颜色主题 (橙色/紫色)
+    const tColor = currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340';
+    const tBg = currentBooking.type === 'At-Home' ? 'rgba(201, 116, 244, 0.12)' : 'rgba(255, 179, 64, 0.12)';
+
+    if (cardOuter) cardOuter.style.background = `linear-gradient(135deg, #1C1C1E 30%, ${tBg} 100%)`;
+    if (watermark) watermark.style.color = tColor;
+    
+    if (cp) {
+        cp.classList.remove('hidden');
+        cp.className = `flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-wider transition-colors duration-500`; 
+        cp.style.backgroundColor = `${tColor}20`;
+        cp.style.color = tColor;
+        cp.innerText = currentBooking.type; 
+    }
+    
+    if (avatar) {
+        avatar.onerror = function() { this.onerror=null; this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80'; };
+        avatar.src = currentBooking.coach.avatar;
+        avatar.style.borderColor = tColor;
+    }
+    
+    const name = document.getElementById('home-coach-name');
+    if (name) name.innerText = currentBooking.coach.name.split(' ')[0];
+    
+    if (timeText) {
+        timeText.innerHTML = `Apr ${currentBooking.date} &bull; ${currentBooking.time}`;
+        timeText.style.color = tColor;
+    }
+}
+
+function renderCoachList() {
+    const container = document.getElementById('view-coach'); 
+    if (!container) return;
+    
+    container.innerHTML = '';
+    const fallbackImg = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80';
+    
+    coachesData.forEach(c => {
+        const card = document.createElement('div'); 
+        card.className = 'premium-card p-4 flex gap-4 items-center cursor-pointer active:scale-[0.98] transition-transform';
+        card.onclick = () => openCoachDetail(c);
+        
+        const isAtHome = c.tags.includes('At-Home');
+        const themeColor = isAtHome ? '#C974F4' : '#FFB340';
+        
+        card.innerHTML = `
+            <div class="w-14 h-14 rounded-full shrink-0 relative overflow-hidden border-2" style="border-color:${themeColor}4D">
+                <img src="${c.avatar}" onerror="this.onerror=null; this.src='${fallbackImg}';" class="w-full h-full object-cover">
+                <div class="absolute inset-0 opacity-20" style="background-color:${themeColor}"></div>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-bold text-white mb-0.5">${c.name}</h3>
+                <p class="text-[10px] text-textMuted line-clamp-1 mb-1.5">${c.desc}</p>
+                <div class="flex gap-2">
+                    ${c.tags.map((t, i) => `<span class="text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider" style="color:${c.tagColors[i]}; background-color:${c.tagColors[i]}15; border: 1px solid ${c.tagColors[i]}33">${t}</span>`).join('')}
+                </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 shrink-0" style="color:${themeColor}80"></i>
+        `;
+        container.appendChild(card);
+    });
+    refreshIcons({ root: container });
+}
+
+function openCoachDetail(coach) {
+    currentSelectedCoach = coach; 
+    currentSelectedDate = null; 
+    currentSelectedSlot = null;
+    
+    const vt = document.getElementById('view-title'); 
+    if (vt) vt.innerText = coach.name; 
+    
+    switchView('coach-detail');
+    
+    const hasAtHome = coach.tags.includes('At-Home');
+    const btn = document.getElementById('book-session-btn');
+    const atBtn = document.getElementById('book-athome-btn');
+    
+    // 修复：重构按钮类的分配，使用精细的 classList 以确保过渡动画正常工作
+    if (btn) {
+        btn.className = "py-4 rounded-xl font-bold text-sm transition-all duration-300 flex justify-center items-center pointer-events-none bg-surfaceLight text-textMuted";
+        if (hasAtHome) {
+            btn.classList.add('flex-1');
+            btn.innerText = "Book Gym";
+        } else {
+            btn.classList.add('w-full');
+            btn.innerText = "Select a Time Slot";
+        }
+    }
+    
+    if (atBtn) {
+        atBtn.className = "py-4 rounded-xl font-bold text-sm transition-all duration-300 flex justify-center items-center pointer-events-none bg-surfaceLight text-textMuted hidden";
+        if (hasAtHome) { 
+            atBtn.classList.remove('hidden'); 
+            atBtn.classList.add('flex-1');
+            atBtn.innerText = "Book At-Home"; 
+        }
+    }
+    
+    const themeColor = hasAtHome ? '#C974F4' : '#FFB340';
+    const fallbackImg = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80';
+    const head = document.getElementById('coach-detail-header');
+    
+    if (head) {
+        head.innerHTML = `
+            <i data-lucide="award" class="absolute -top-6 -right-6 w-32 h-32 rotate-12 pointer-events-none opacity-20" style="color:${themeColor}"></i>
+            <div class="w-20 h-20 rounded-full border-4 mb-3 z-10 shadow-lg relative overflow-hidden" style="border-color:${themeColor}4D">
+                <img src="${coach.avatar}" onerror="this.onerror=null; this.src='${fallbackImg}';" class="w-full h-full object-cover">
+                <div class="absolute inset-0 opacity-20" style="background-color:${themeColor}"></div>
+            </div>
+            <p class="text-xs text-textMuted leading-relaxed mb-3 z-10">${coach.desc}</p>
+            <div class="flex gap-2 z-10">
+                ${coach.tags.map((t, i) => `<span class="text-[9px] px-2 py-1 rounded-full font-bold uppercase tracking-wider" style="color:${coach.tagColors[i]}; background-color:${coach.tagColors[i]}15; border: 1px solid ${coach.tagColors[i]}33">${t}</span>`).join('')}
+            </div>
+        `;
+    }
+    
+    const calGrid = document.getElementById('coach-calendar'); 
+    if (!calGrid) return;
+    
+    calGrid.innerHTML = '';
+    let targetBtnToClick = null;
+
+    calendarDaysInfo.forEach((day, index) => {
+        const has = coachSchedules[coach.id] && coachSchedules[coach.id][day.date.toString()];
+        const isBookedDate = currentBooking && currentBooking.coach.id === coach.id && currentBooking.date === day.date.toString();
+        const d = document.createElement('div'); 
+        
+        if (has) {
+            d.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl cursor-pointer active:scale-95 transition-all';
+            
+            // 已预约的日期给予彩色边框的高光提示
+            if (isBookedDate) {
+                const tColor = currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340';
+                d.style.border = `1px solid ${tColor}`;
+                d.style.backgroundColor = `${tColor}15`;
+                d.style.color = tColor;
+                targetBtnToClick = d;
+            } else {
+                d.className += ' bg-surfaceLight border border-transparent text-white';
+            }
+            d.onclick = () => selectCoachDate(day.date.toString(), d);
+        } else {
+            d.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl bg-surfaceLight/30 border border-transparent text-textMuted/30 cursor-not-allowed';
+        }
+        
+        let dotHtml = '<div class="w-1 h-1 mt-1"></div>';
+        if (isBookedDate) {
+            dotHtml = `<div class="w-1.5 h-1.5 rounded-full mt-1" style="background-color: ${currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340'}"></div>`;
+        } else if (has) {
+            dotHtml = `<div class="w-1 h-1 rounded-full bg-[#47A1FF] mt-1"></div>`;
+        }
+
+        d.innerHTML = `
+            <span class="text-[11px] font-medium mb-1">${weekMap[index].charAt(0)}</span>
+            <span class="text-xl font-bold">${day.date}</span>
+            ${dotHtml}
+        `;
+        calGrid.appendChild(d);
+    });
+    
+    const sc = document.getElementById('coach-slots-container'); 
+    if (sc) sc.classList.add('hidden'); 
+    
+    refreshIcons();
+
+    // 自动打开并渲染预约详情
+    if (targetBtnToClick) {
+        setTimeout(() => targetBtnToClick.click(), 10);
+    }
+}
+
+function selectCoachDate(dayStr, btnEl) {
+    currentSelectedDate = dayStr; 
+    currentSelectedSlot = null;
+    
+    const cc = document.getElementById('coach-calendar');
+    if (cc) {
+        Array.from(cc.children).forEach(c => { 
+            if (!c.classList.contains('cursor-not-allowed')) {
+                // 恢复普通可选按钮的状态
+                c.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl cursor-pointer active:scale-95 transition-all bg-surfaceLight border border-transparent text-white'; 
+                c.style.backgroundColor = '';
+                c.style.borderColor = '';
+                c.style.color = '';
+            }
+        });
+    }
+    
+    // 当前选中日期强制高亮为白色
+    btnEl.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl bg-white border border-transparent cursor-pointer active:scale-95 transition-all text-black';
+    
+    const slots = coachSchedules[currentSelectedCoach.id][dayStr];
+    const grid = document.getElementById('coach-slots'); 
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    slots.forEach(s => {
+        const isBooked = currentBooking && currentBooking.coach.id === currentSelectedCoach.id && currentBooking.date === dayStr && currentBooking.time === s;
+        const b = document.createElement('button'); 
+        
+        if (isBooked) {
+            // 已预约的时段呈现极其明显的实心高亮状态
+            const tColor = currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340';
+            b.className = 'py-3 rounded-xl text-xs font-bold text-black border-2 transition-all relative overflow-hidden shadow-lg shadow-black/50 flex items-center justify-center gap-1.5'; 
+            b.style.backgroundColor = tColor; 
+            b.style.borderColor = tColor;
+            b.innerHTML = `
+                <i data-lucide="check-circle" class="w-4 h-4 text-black"></i>
+                <span class="text-black drop-shadow-sm">${s}</span>
+                <span class="absolute text-[8px] uppercase font-black opacity-30 top-1 right-1.5 text-black">${currentBooking.type}</span>
+            `;
+            currentSelectedSlot = s; // 自动将当前选中的 slot 设置为已预约的 slot
+        } else {
+            b.className = 'py-3 rounded-xl bg-surfaceLight text-xs font-bold text-white border border-transparent transition-all hover:bg-surfaceLight/80'; 
+            b.innerText = s;
+        }
+        
+        b.onclick = () => { 
+            currentSelectedSlot = s; 
+            Array.from(grid.children).forEach(c => { 
+                if (!c.innerHTML.includes('check')) { // 不覆盖已预约的专属样式
+                    c.className = 'py-3 rounded-xl bg-surfaceLight text-xs font-bold text-white border border-transparent transition-all hover:bg-surfaceLight/80';
+                }
+            }); 
+            if (!isBooked) {
+                b.className = 'py-3 rounded-xl text-xs font-bold text-[#47A1FF] border border-[#47A1FF] bg-[#47A1FF]/10 transition-all'; 
+            }
+            updateBookButton(); 
+        };
+        grid.appendChild(b);
+    });
+    
+    const sc = document.getElementById('coach-slots-container'); 
+    if (sc) sc.classList.remove('hidden'); 
+    
+    refreshIcons({root: grid});
+    // 若自动捕获到了已预约的时间段，顺便刷新底部按钮状态
+    setTimeout(() => updateBookButton(), 10);
+}
+
+function updateBookButton() {
+    const btn = document.getElementById('book-session-btn');
+    const atBtn = document.getElementById('book-athome-btn');
+    if (!btn || !atBtn) return;
+    
+    const hasAtHome = currentSelectedCoach && currentSelectedCoach.tags.includes('At-Home');
+    
+    // 取消预约逻辑：判断当前选中的是否正是已预约的课程
+    const isBookedSlot = currentBooking && currentSelectedCoach && 
+                         currentBooking.coach.id === currentSelectedCoach.id && 
+                         currentBooking.date === currentSelectedDate && 
+                         currentBooking.time === currentSelectedSlot;
+
+    if (isBookedSlot) {
+        btn.classList.remove('bg-surfaceLight', 'text-textMuted', 'pointer-events-none', 'bg-[#47A1FF]', 'w-full', 'flex-1'); 
+        btn.classList.add('bg-[#FF5C77]', 'text-white', 'active:scale-[0.98]');
+        if (hasAtHome) btn.classList.add('flex-1'); else btn.classList.add('w-full');
+        
+        btn.innerText = "Cancel Booking";
+        btn.onclick = () => {
+            cancelBooking();
+            btn.innerText = "Canceled";
+            btn.classList.replace('bg-[#FF5C77]', 'bg-surfaceLight');
+            btn.classList.replace('text-white', 'text-textMuted');
+            btn.classList.add('pointer-events-none');
+            setTimeout(() => updateBookButton(), 1000);
+        };
+        
+        if (hasAtHome) {
+            atBtn.classList.add('pointer-events-none', 'opacity-30');
+            atBtn.classList.remove('bg-[#C974F4]', 'text-white');
+            atBtn.classList.add('bg-surfaceLight', 'text-textMuted');
+        }
+        return;
+    }
+    
+    if (currentSelectedDate && currentSelectedSlot) {
+        // 启用状态颜色精细赋值，避免闪烁
+        btn.classList.remove('bg-surfaceLight', 'text-textMuted', 'pointer-events-none', 'bg-[#FF5C77]', 'w-full', 'flex-1'); 
+        btn.classList.add('bg-[#47A1FF]', 'text-white', 'active:scale-[0.98]', hasAtHome ? 'flex-1' : 'w-full');
+        btn.onclick = () => handleBookingConfirm(btn, 'In-Gym');
+        
+        if (!hasAtHome) {
+            btn.innerText = `Book ${currentSelectedSlot}`;
+        } else {
+            btn.innerText = "Book Gym";
+        }
+        
+        if (hasAtHome) { 
+            atBtn.classList.remove('bg-surfaceLight', 'text-textMuted', 'pointer-events-none', 'opacity-30'); 
+            atBtn.classList.add('bg-[#C974F4]', 'text-white', 'active:scale-[0.98]', 'flex-1'); 
+            atBtn.onclick = () => handleBookingConfirm(atBtn, 'At-Home'); 
+        }
+    } else {
+        // 禁用状态精细恢复
+        btn.classList.add('bg-surfaceLight', 'text-textMuted', 'pointer-events-none'); 
+        btn.classList.remove('bg-[#47A1FF]', 'text-white', 'active:scale-[0.98]', 'bg-[#FF5C77]');
+        btn.onclick = null;
+        
+        if (hasAtHome) {
+            btn.classList.add('flex-1');
+            btn.classList.remove('w-full');
+            btn.innerText = "Book Gym";
+        } else {
+            btn.classList.add('w-full');
+            btn.classList.remove('flex-1');
+            btn.innerText = "Select Slot";
+        }
+        
+        if (hasAtHome) { 
+            atBtn.classList.add('bg-surfaceLight', 'text-textMuted', 'pointer-events-none'); 
+            atBtn.classList.remove('bg-[#C974F4]', 'text-white', 'active:scale-[0.98]', 'opacity-30'); 
+            atBtn.onclick = null;
+        }
+    }
+}
+
+function handleBookingConfirm(clickedBtn, type) {
+    const originalText = clickedBtn.innerText;
+    const originalBg = type === 'At-Home' ? 'bg-[#C974F4]' : 'bg-[#47A1FF]';
+    
+    clickedBtn.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 inline-block mr-2"></i> Confirmed'; 
+    clickedBtn.classList.remove(originalBg, 'active:scale-[0.98]'); 
+    clickedBtn.classList.add('bg-[#5ED67A]', 'pointer-events-none');
+    
+    const btn = document.getElementById('book-session-btn');
+    const atBtn = document.getElementById('book-athome-btn');
+    
+    if (clickedBtn === btn) { 
+        atBtn.classList.add('pointer-events-none', 'opacity-30'); 
+    } else { 
+        btn.classList.add('pointer-events-none', 'opacity-30'); 
+    }
+    
+    refreshIcons();
+    currentBooking = { coach: currentSelectedCoach, date: currentSelectedDate, time: currentSelectedSlot, type: type };
+    updateHomeBooking();
+    
+    setTimeout(() => { 
+        switchView('home'); 
+        clickedBtn.classList.add(originalBg, 'active:scale-[0.98]'); 
+        clickedBtn.classList.remove('bg-[#5ED67A]', 'pointer-events-none'); 
+        clickedBtn.innerText = originalText; 
+        
+        btn.classList.remove('pointer-events-none', 'opacity-30'); 
+        atBtn.classList.remove('pointer-events-none', 'opacity-30');
+        
+        currentSelectedDate = null;
+        currentSelectedSlot = null;
+        updateBookButton();
+    }, 1200);
+}
+
+function renderGymChart() {
+    const el = document.getElementById('gymLoadChart');
+    if (typeof Chart === 'undefined' || !el) return; 
+    
+    const ctx = el.getContext('2d');
+    if (gymLoadChart) gymLoadChart.destroy();
+    
+    gymLoadChart = new Chart(ctx, { 
+        type: 'line', 
+        data: { 
+            labels: ['6AM', '8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM', '10PM'], 
+            datasets: [
+                { 
+                    label: 'Historical', 
+                    data: [12, 45, 32, 28, 24, null, null, null, null], 
+                    borderColor: '#47A1FF', 
+                    backgroundColor: 'rgba(71, 161, 255, 0.1)', 
+                    borderWidth: 3, 
+                    fill: true, 
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#47A1FF'
+                }, 
+                { 
+                    label: 'Predicted', 
+                    data: [null, null, null, null, 24, 38, 65, 42, 15], 
+                    borderColor: '#8E8E93', 
+                    borderWidth: 2, 
+                    borderDash: [5, 5], 
+                    tension: 0.4,
+                    pointRadius: 0
+                }
+            ] 
+        }, 
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { 
+                legend: { 
+                    display: true,
+                    labels: { boxWidth: 12, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } }
+                } 
+            }, 
+            scales: { 
+                y: { display: false, max: 80 }, 
+                x: { grid: { display: false, drawBorder: false }, ticks: { font: { size: 10 } } } 
+            } 
+        } 
+    });
+}
+
+window.onload = () => { 
+    setGender('male'); 
+    switchView('home'); 
+    refreshIcons(); 
+};
+</script>
+</body>
+</html>
