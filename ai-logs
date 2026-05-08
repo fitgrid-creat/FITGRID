@@ -1,0 +1,12 @@
+# 🌊 Vibe Coding Logs (GridFit)
+
+> **Project Mission:** 本文档记录了用于生成 GridFit 项目核心组件的关键 AI 提示词（Prompts），展示了从 UI 构思到后端架构的完整实现路径。
+
+---
+
+## 📱 Prompt 1: Core Layout & iOS-Style Navigation
+**Intent:** 生成基础 UI 外壳和丝滑的导航体验。
+
+**Prompt Content:**
+```text
+"Act as an expert frontend engineer. Create a mobile-first, iOS-style web application layout using strictly vanilla HTML, JS, and Tailwind CSS (via CDN). Include a bottom tab bar with 5 icons (Summary, Live Gym, Matrix, Coaches, Plan) using Lucide Icons. Implement a smooth view-switching logic in JavaScript so only one main view is visible at a time. The overall theme should be dark mode (#000000 background) with glassmorphism effects (backdrop-blur)."
