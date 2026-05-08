@@ -1,12 +1,27 @@
-# 🌊 Vibe Coding Logs (GridFit)
+# Vibe Coding Logs (GridFit)
 
-> **Project Mission:** 本文档记录了用于生成 GridFit 项目核心组件的关键 AI 提示词（Prompts），展示了从 UI 构思到后端架构的完整实现路径。
+This document contains the primary AI prompts used to generate the core components of the GridFit project. 
 
----
+## Prompt 1: Core Layout & iOS-Style Navigation
+**Intent:** Generate the base UI shell and navigation.
+**Prompt:** > "Act as an expert frontend engineer. Create a mobile-first, iOS-style web application layout using strictly vanilla HTML, JS, and Tailwind CSS (via CDN). Include a bottom tab bar with 5 icons (Summary, Live Gym, Matrix, Coaches, Plan) using Lucide Icons. Implement a smooth view-switching logic in JavaScript so only one main view is visible at a time. The overall theme should be dark mode (`#000000` background) with glassmorphism effects (`backdrop-blur`)."
 
-## 📱 Prompt 1: Core Layout & iOS-Style Navigation
-**Intent:** 生成基础 UI 外壳和丝滑的导航体验。
+## Prompt 2: Body Recomposition Matrix & Charts
+**Intent:** Build the core logic for the body calibration matrix.
+**Prompt:**
+> "Create a 3x3 grid component for selecting body types (ranging from Lean/Slender to High Mass/Stocky). When a user selects a 'Baseline' and a 'Target', calculate a workout split (Resistance Training vs Cardio percentage). Use Chart.js to render these results dynamically into two charts: a doughnut chart for the 'Macro Split' and a bar chart for the 'System Focus' (Z1, Z2, HIIT, METCON). Provide separate theme colors for Male (Blue) and Female (Pink) modes."
 
-**Prompt Content:**
-```text
-"Act as an expert frontend engineer. Create a mobile-first, iOS-style web application layout using strictly vanilla HTML, JS, and Tailwind CSS (via CDN). Include a bottom tab bar with 5 icons (Summary, Live Gym, Matrix, Coaches, Plan) using Lucide Icons. Implement a smooth view-switching logic in JavaScript so only one main view is visible at a time. The overall theme should be dark mode (#000000 background) with glassmorphism effects (backdrop-blur)."
+## Prompt 3: Coach Booking System
+**Intent:** Generate the coach listing and scheduling UI.
+**Prompt:**
+> "Design a coach booking view. First, display a list of coaches with their avatar, name, and specialty tags. When a coach is clicked, transition to a detail view showing a horizontal scrollable calendar for the next 7 days. When a date is clicked, reveal a grid of available time slots. Add logic to handle 'Booking' and 'Canceling' sessions, updating the state in `localStorage` and reflecting the booked status on the home dashboard."
+
+## Prompt 4: Full-Screen Workout Timer
+**Intent:** Add an immersive workout tracking feature.
+**Prompt:**
+> "Build a full-screen, immersive workout timer overlay hidden by default (z-index 100). When triggered via a JavaScript function `startWorkoutTimer(category, title, color)`, animate the overlay into view. It should display a large pulsing ring, the elapsed time (MM:SS), and a 'Finish' button. When 'Finish' is clicked, log the elapsed minutes to a global state variable and hide the overlay."
+
+## Prompt 5: Spring Boot Backend Architecture
+**Intent:** Generate the backend skeleton.
+**Prompt:**
+> "Generate a `pom.xml` for a Spring Boot 3.2.0 project using Java 17. Include dependencies for `spring-boot-starter-web`. Then, create the basic Java classes: a `GymApiApplication` main class, and REST controllers mapping to `/api/gym/live`, `/api/coaches`, and `/api/courses/weekly` that return mock JSON data corresponding to a gym tracking frontend."
