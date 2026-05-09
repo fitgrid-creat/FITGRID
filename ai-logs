@@ -49,10 +49,3 @@
 
 ---
 
-##  Prompt 5: Spring Boot Backend Architecture (Future Integration)
-
-**Intent:** Generate the backend Java skeleton to eventually replace the vanilla JS mock data structures.  
-**Output Component:** `pom.xml`, `GymApiApplication.java`, REST Controller shells.
-
-**Prompt:**
-> "Generate a `pom.xml` for a Spring Boot 3.2.0 project using Java 17. Include dependencies for `spring-boot-starter-web`. Then, create the basic Java classes: a `GymApiApplication` main class, and REST controllers mapping to `/api/gym/live`, `/api/coaches`, and `/api/courses/weekly` that return mock JSON data corresponding to a gym tracking frontend."
