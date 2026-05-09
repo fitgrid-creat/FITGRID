@@ -685,7 +685,7 @@ function initGrid() {
         const btn = document.createElement('button');
         btn.className = 'matrix-btn bg-surfaceLight rounded-[14px] w-full aspect-square text-left relative overflow-hidden flex flex-col justify-end border-2 border-transparent p-0 group';
         btn.dataset.id = d.id; 
-        const imgSrc = currentGender === 'female' ? `f${d.imgCode}.png` : `${d.imgCode}.png`;
+        const imgSrc = currentGender === 'female' ? `image/f${d.imgCode}.png` : `image/${d.imgCode}.png`;
         
         btn.innerHTML = `
             <div class="absolute inset-0 transition-opacity duration-300 opacity-60 group-hover:opacity-90 z-0" id="icon-wrap-${d.id}">
@@ -717,7 +717,7 @@ function updateCardIcon(containerId, source, color) {
 
 function handleSelect(data, btn, isInit = false) {
     const t = themes[currentGender];
-    const imgSrc = currentGender === 'female' ? `f${data.imgCode}.png` : `${data.imgCode}.png`;
+    const imgSrc = currentGender === 'female' ? `image/f${data.imgCode}.png` : `image/${data.imgCode}.png`;
     
     if (!currentCell) {
         currentCell = data; 
@@ -1247,7 +1247,6 @@ document.getElementById('reset-btn').onclick = () => {
     updateHomeBooking();
 };
 
-// Fix: adjusted coach name order, put last name at the end, completed missing array declaration
 const coachesData = [
     { id: 'c1', name: 'Wei Li', avatar: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80', desc: 'Focuses on practical strength for daily life. Great for beginners looking to build a sustainable routine without intimidating equipment.', tags: ['Strength', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
     { id: 'c2', name: 'Siyu Chen', avatar: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=150&q=80', desc: 'Helps you fix your posture and lose fat effectively. She provides easy-to-follow cardio plans you can do right in your living room.', tags: ['Fat Loss', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
@@ -1751,8 +1750,8 @@ window.onload = () => {
         document.getElementById('target-display').innerHTML = targetCell.name; 
         document.getElementById('target-display').style.color = themes[currentGender].glow;
         
-        const currentImgSrc = currentGender === 'female' ? `f${currentCell.imgCode}.png` : `${currentCell.imgCode}.png`;
-        const targetImgSrc = currentGender === 'female' ? `f${targetCell.imgCode}.png` : `${targetCell.imgCode}.png`;
+        const currentImgSrc = currentGender === 'female' ? `image/f${currentCell.imgCode}.png` : `image/${currentCell.imgCode}.png`;
+        const targetImgSrc = currentGender === 'female' ? `image/f${targetCell.imgCode}.png` : `image/${targetCell.imgCode}.png`;
         updateCardIcon('current-icon-container', currentImgSrc, 'rgba(255,255,255,0.05)');
         updateCardIcon('target-icon-container', targetImgSrc, themes[currentGender].glowDim);
         
