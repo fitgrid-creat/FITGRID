@@ -2,7 +2,7 @@
 
 GridFit is a full-stack gym management and personalized body recomposition application. It provides real-time gym load tracking, coach scheduling, and personalized workout protocols based on the user's current and target body metrics.
 
-## 🛠 Technologies Used
+## Technologies Used
 
 ### Frontend
 * **HTML5/CSS3/JavaScript (Vanilla)**: No complex frameworks required, lightweight and fast.
@@ -15,7 +15,7 @@ GridFit is a full-stack gym management and personalized body recomposition appli
 * **Spring Boot 3.2.0**: For creating the standalone RESTful API.
 * **Maven**: Dependency management and build tool.
 
-## 🚀 Setup Instructions
+##  Setup Instructions
 
 ### 1. Backend Setup
 The backend is a Spring Boot application providing REST APIs for the frontend.
@@ -38,7 +38,7 @@ The frontend is built with vanilla web technologies and can be served statically
    * Or use the **Live Server** extension in VS Code.
 4. Open your browser and navigate to the local server URL (e.g., `http://localhost:3000/24pre.html`).
 
-## ✨ Features
+##  Features
 * **Live Gym Load**: View real-time and predicted gym capacities.
 * **Body Recomposition Matrix**: Calibrate your current and target body types to generate a custom macro/micro split (Resistance vs. Cardio).
 * **Coach Scheduling**: Browse available coaches, view their schedules, and book in-gym or at-home sessions.
