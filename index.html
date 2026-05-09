@@ -513,11 +513,11 @@ const gridBaseData = [
 ];
 
 const courseDatabase = {
-    'RESISTANCE': { type: 'STRENGTH', categoryTitle: 'Resistance Training', specificTitles: ['Heavy Lifting', 'Hypertrophy'], color: '#C974F4', icon: 'dumbbell', image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=400&q=80' },
-    'METCON': { type: 'METCON', categoryTitle: 'Metabolic Resistance', specificTitles: ['Kettlebell Advanced', 'Machine Circuit'], color: '#FFB340', icon: 'flame', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=400&q=80' },
-    'Z2': { type: 'Z2', categoryTitle: 'Fat Oxidation (Z2)', specificTitles: ['Steady Cycling', 'Incline Walk'], color: '#47A1FF', icon: 'bike', image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80' },
-    'HIIT': { type: 'HIIT', categoryTitle: 'Anaerobic Intervals', specificTitles: ['Sprints', 'Explosive Cycling'], color: '#FF5C77', icon: 'zap', image: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=400&q=80' },
-    'Z1': { type: 'Z1', categoryTitle: 'Active Recovery', specificTitles: ['Slow Walk', 'Static Stretching'], color: '#5ED67A', icon: 'leaf', image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80' }
+    'RESISTANCE': { type: 'STRENGTH', categoryTitle: 'Resistance Training', specificTitles: ['Heavy Lifting', 'Hypertrophy'], color: '#C974F4', icon: 'dumbbell', imagess: 'https://imagesss.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=400&q=80' },
+    'METCON': { type: 'METCON', categoryTitle: 'Metabolic Resistance', specificTitles: ['Kettlebell Advanced', 'Machine Circuit'], color: '#FFB340', icon: 'flame', imagess: 'https://imagesss.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=400&q=80' },
+    'Z2': { type: 'Z2', categoryTitle: 'Fat Oxidation (Z2)', specificTitles: ['Steady Cycling', 'Incline Walk'], color: '#47A1FF', icon: 'bike', imagess: 'https://imagesss.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80' },
+    'HIIT': { type: 'HIIT', categoryTitle: 'Anaerobic Intervals', specificTitles: ['Sprints', 'Explosive Cycling'], color: '#FF5C77', icon: 'zap', imagess: 'https://imagesss.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=400&q=80' },
+    'Z1': { type: 'Z1', categoryTitle: 'Active Recovery', specificTitles: ['Slow Walk', 'Static Stretching'], color: '#5ED67A', icon: 'leaf', imagess: 'https://imagesss.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80' }
 };
 
 const bfpThresholds = { male: { 1: '< 15%', 2: '15-25%', 3: '> 25%' }, female: { 1: '< 22%', 2: '23-35%', 3: '> 35%' } };
@@ -679,13 +679,13 @@ function setGender(gender) {
 function initGrid() {
     const container = document.getElementById('matrix-grid'); 
     container.innerHTML = '';
-    const fallbackImg = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=300&q=80';
+    const fallbackImg = 'https://imagesss.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=300&q=80';
     
     gridBaseData.forEach(d => {
         const btn = document.createElement('button');
         btn.className = 'matrix-btn bg-surfaceLight rounded-[14px] w-full aspect-square text-left relative overflow-hidden flex flex-col justify-end border-2 border-transparent p-0 group';
         btn.dataset.id = d.id; 
-        const imgSrc = currentGender === 'female' ? `image/f${d.imgCode}.png` : `image/${d.imgCode}.png`;
+        const imgSrc = currentGender === 'female' ? `imagess/f${d.imgCode}.png` : `imagess/${d.imgCode}.png`;
         
         btn.innerHTML = `
             <div class="absolute inset-0 transition-opacity duration-300 opacity-60 group-hover:opacity-90 z-0" id="icon-wrap-${d.id}">
@@ -707,7 +707,7 @@ function updateCardIcon(containerId, source, color) {
     const container = document.getElementById(containerId);
     if (!container) return;
     if (source.endsWith('.png')) {
-        const fallbackUrl = 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=300&q=80';
+        const fallbackUrl = 'https://imagesss.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=300&q=80';
         container.innerHTML = `<img src="${source}" onerror="this.onerror=null; this.src='${fallbackUrl}'" class="w-full h-full object-cover opacity-20 transition-all duration-300 mix-blend-screen" style="filter: grayscale(30%);">`;
     } else { 
         container.innerHTML = `<i data-lucide="${source}" class="w-24 h-24" style="color: ${color}"></i>`; 
@@ -717,7 +717,7 @@ function updateCardIcon(containerId, source, color) {
 
 function handleSelect(data, btn, isInit = false) {
     const t = themes[currentGender];
-    const imgSrc = currentGender === 'female' ? `image/f${data.imgCode}.png` : `image/${data.imgCode}.png`;
+    const imgSrc = currentGender === 'female' ? `images/f${data.imgCode}.png` : `images/${data.imgCode}.png`;
     
     if (!currentCell) {
         currentCell = data; 
@@ -992,7 +992,7 @@ function updateRecommendedCards() {
         card.className = 'snap-center premium-card-light w-[130px] min-w-[130px] p-4 flex flex-col justify-between aspect-[3/4] shrink-0 relative overflow-hidden group transition-all duration-500';
         card.innerHTML = `
             <div class="absolute inset-0 z-0">
-                <img src="${c.image}" class="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-300">
+                <img src="${c.images}" class="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-300">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#1C1C1E] via-[#1C1C1E]/60 to-[#1C1C1E]/10"></div>
                 ${isDone ? `<div class="absolute inset-0 bg-[#5ED67A]/20 backdrop-blur-[2px] transition-all"></div>` : ''}
             </div>
@@ -1156,7 +1156,7 @@ function updateTimeline(idx) {
                     <div class="premium-card-light p-4 border transition-all duration-300 flex justify-between items-center gap-2 relative overflow-hidden" style="${isSel ? `border-color: ${c.color};` : 'border-color: rgba(255,255,255,0.05);'}">
                         
                         <div class="absolute inset-0 z-0">
-                            <img src="${c.image}" class="w-full h-full object-cover transition-opacity duration-300 ${isSel ? 'opacity-40' : 'opacity-20'}">
+                            <img src="${c.images}" class="w-full h-full object-cover transition-opacity duration-300 ${isSel ? 'opacity-40' : 'opacity-20'}">
                             <div class="absolute inset-0 bg-gradient-to-r from-[#1C1C1E] via-[#1C1C1E]/80 to-[#1C1C1E]/20"></div>
                             ${isSel ? `<div class="absolute inset-0 mix-blend-overlay opacity-40" style="background-color: ${c.color}"></div>` : ''}
                         </div>
@@ -1248,12 +1248,12 @@ document.getElementById('reset-btn').onclick = () => {
 };
 
 const coachesData = [
-    { id: 'c1', name: 'Wei Li', avatar: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80', desc: 'Focuses on practical strength for daily life. Great for beginners looking to build a sustainable routine without intimidating equipment.', tags: ['Strength', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
-    { id: 'c2', name: 'Siyu Chen', avatar: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=150&q=80', desc: 'Helps you fix your posture and lose fat effectively. She provides easy-to-follow cardio plans you can do right in your living room.', tags: ['Fat Loss', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
-    { id: 'c3', name: 'Hao Wang', avatar: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=150&q=80', desc: 'Friendly mobility coach who helps you recover from sitting at a desk all day. Focuses on stretching and moving pain-free.', tags: ['Recovery', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
-    { id: 'c4', name: 'Jian Zhao', avatar: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=150&q=80', desc: 'Passionate about body FITGRIDsition. He breaks down complex exercises into simple steps to help you tone up safely.', tags: ['Hypertrophy', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
-    { id: 'c5', name: 'Min Zhang', avatar: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=150&q=80', desc: 'Energetic HIIT instructor who keeps you motivated. Expect sweaty, fun sessions that get your heart rate up quickly.', tags: ['HIIT', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
-    { id: 'c6', name: 'Yue Lin', avatar: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=150&q=80', desc: 'Gentle yoga and core instructor.', tags: ['Yoga', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] }
+    { id: 'c1', name: 'Wei Li', avatar: 'https://imagess.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80', desc: 'Focuses on practical strength for daily life. Great for beginners looking to build a sustainable routine without intimidating equipment.', tags: ['Strength', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
+    { id: 'c2', name: 'Siyu Chen', avatar: 'https://imagess.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=150&q=80', desc: 'Helps you fix your posture and lose fat effectively. She provides easy-to-follow cardio plans you can do right in your living room.', tags: ['Fat Loss', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
+    { id: 'c3', name: 'Hao Wang', avatar: 'https://imagess.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=150&q=80', desc: 'Friendly mobility coach who helps you recover from sitting at a desk all day. Focuses on stretching and moving pain-free.', tags: ['Recovery', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
+    { id: 'c4', name: 'Jian Zhao', avatar: 'https://imagess.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=150&q=80', desc: 'Passionate about body FITGRIDsition. He breaks down complex exercises into simple steps to help you tone up safely.', tags: ['Hypertrophy', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
+    { id: 'c5', name: 'Min Zhang', avatar: 'https://imagess.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=150&q=80', desc: 'Energetic HIIT instructor who keeps you motivated. Expect sweaty, fun sessions that get your heart rate up quickly.', tags: ['HIIT', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
+    { id: 'c6', name: 'Yue Lin', avatar: 'https://imagess.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=150&q=80', desc: 'Gentle yoga and core instructor.', tags: ['Yoga', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] }
 ];
 
 function generateCoachSchedules() {
@@ -1369,7 +1369,7 @@ function updateHomeBooking() {
     }
     
     if (avatar) {
-        avatar.onerror = function() { this.onerror=null; this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80'; };
+        avatar.onerror = function() { this.onerror=null; this.src='https://imagess.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80'; };
         avatar.src = currentBooking.coach.avatar; avatar.style.borderColor = tColor;
     }
     
@@ -1387,7 +1387,7 @@ function renderCoachList() {
     if (!container) return;
     const dataToUse = window.coachesDataCache && window.coachesDataCache.length > 0 ? window.coachesDataCache : window.coachesData;
     container.innerHTML = '';
-    const fallbackImg = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80';
+    const fallbackImg = 'https://imagess.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80';
     
     dataToUse.forEach(c => {
         const card = document.createElement('div'); 
@@ -1441,7 +1441,7 @@ async function openCoachDetail(coach) {
         if (hasAtHome) { atBtn.classList.remove('hidden'); atBtn.classList.add('flex-1'); atBtn.innerText = "Book At-Home"; }
     }
 
-    const themeColor = hasAtHome ? '#C974F4' : '#FFB340', fallbackImg = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80', head = document.getElementById('coach-detail-header');
+    const themeColor = hasAtHome ? '#C974F4' : '#FFB340', fallbackImg = 'https://imagess.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80', head = document.getElementById('coach-detail-header');
 
     if (head) {
         head.innerHTML = `
@@ -1750,8 +1750,8 @@ window.onload = () => {
         document.getElementById('target-display').innerHTML = targetCell.name; 
         document.getElementById('target-display').style.color = themes[currentGender].glow;
         
-        const currentImgSrc = currentGender === 'female' ? `image/f${currentCell.imgCode}.png` : `image/${currentCell.imgCode}.png`;
-        const targetImgSrc = currentGender === 'female' ? `image/f${targetCell.imgCode}.png` : `image/${targetCell.imgCode}.png`;
+        const currentImgSrc = currentGender === 'female' ? `images/f${currentCell.imgCode}.png` : `images/${currentCell.imgCode}.png`;
+        const targetImgSrc = currentGender === 'female' ? `images/f${targetCell.imgCode}.png` : `images/${targetCell.imgCode}.png`;
         updateCardIcon('current-icon-container', currentImgSrc, 'rgba(255,255,255,0.05)');
         updateCardIcon('target-icon-container', targetImgSrc, themes[currentGender].glowDim);
         
