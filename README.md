@@ -10,24 +10,9 @@ GridFit is a full-stack gym management and personalized body recomposition appli
 * **Chart.js**: For rendering gym load predictions and macro/micro workout splits.
 * **Lucide Icons**: Clean, scalable SVG icons.
 
-### Backend
-* **Java 17**: Core programming language.
-* **Spring Boot 3.2.0**: For creating the standalone RESTful API.
-* **Maven**: Dependency management and build tool.
-
 ##  Setup Instructions
 
-### 1. Backend Setup
-The backend is a Spring Boot application providing REST APIs for the frontend.
-
-1. Ensure you have **Java 17** installed on your machine.
-2. Open a terminal and navigate to the `backend` directory.
-3. Run the application using the Maven wrapper:
-   * **Windows**: `mvnw.cmd spring-boot:run`
-   * **macOS/Linux**: `./mvnw spring-boot:run`
-4. The backend server will start and listen on `http://localhost:8080`.
-
-### 2. Frontend Setup
+### 1. Frontend Set1up
 The frontend is built with vanilla web technologies and can be served statically.
 
 1. **Do not double-click the HTML file** to open it directly (this causes CORS issues when fetching data). Instead, use a local web server.
