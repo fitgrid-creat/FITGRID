@@ -205,9 +205,12 @@
         
         :root { 
             --safe-top: env(safe-area-inset-top); 
-            --safe-bottom: env(safe-area-inset-bottom); 
+            --safe-bottom: env(safe-area-inset-bottom);
+            --font-scale: 1; /* Centralized font scaling mechanism */
         }
         
+        html { font-size: calc(16px * var(--font-scale)); }
+
         body { 
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; 
             background-color: #000000; 
@@ -216,8 +219,17 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        .premium-card { background-color: #1C1C1E; border-radius: 24px; position: relative; overflow: hidden; }
-        .premium-card-light { background-color: #2C2C2E; border-radius: 20px; }
+        /* Responsive overrides for Tailwind's fixed pixel absolute texts to scale with the rest of UI */
+        .text-\\[10px\\] { font-size: 0.625rem; }
+        .text-\\[11px\\] { font-size: 0.6875rem; }
+        .text-\\[9px\\] { font-size: 0.5625rem; }
+        .text-\\[8px\\] { font-size: 0.5rem; }
+        .text-\\[13px\\] { font-size: 0.8125rem; }
+        .text-\\[15px\\] { font-size: 0.9375rem; }
+        .text-\\[32px\\] { font-size: 2rem; }
+
+        .premium-card { background-color: #1C1C1E; border-radius: 1.5rem; position: relative; overflow: hidden; }
+        .premium-card-light { background-color: #2C2C2E; border-radius: 1.25rem; }
         
         .ios-tab-bar {
             background: rgba(28, 28, 30, 0.85);
@@ -248,56 +260,105 @@
         .pt-safe { padding-top: calc(1rem + var(--safe-top)); }
         .pb-safe { padding-bottom: calc(5rem + var(--safe-bottom)); }
 
-        .map-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 500px;
-            aspect-ratio: 4 / 6;
-            background: #050505;
-        }
+        .map-wrapper { position: relative; width: 100%; max-width: 500px; aspect-ratio: 4 / 6; background: #050505; }
+        .equipment { position: absolute; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform: translate(-50%, -50%); z-index: 10; }
+        
+        /* Default Map/Equip Styles */
+        .status-idle svg { color: #ffffff; filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 2px rgba(255, 255, 255, 1)); }
+        .status-in-use svg { color: #1a1a1a; stroke: #333; stroke-width: 0.5px; filter: none; opacity: 0.8; }
+        .grid-bg { fill: url(#grid); }
+        .equip-avail-legend { background-color: #ffffff; box-shadow: 0 0 8px #fff; }
+        .equip-inuse-legend { background-color: #1a1a1a; border: 1px solid #333; }
 
-        .equipment {
-            position: absolute;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translate(-50%, -50%);
-            z-index: 10;
-        }
+        /* Dynamic Timeline Buttons */
+        .timeline-book-btn { background-color: rgba(0,0,0,0.5); color: #D1D5DB; border-color: rgba(255,255,255,0.05); }
+        .timeline-book-btn:hover { color: #FFFFFF; background-color: rgba(0,0,0,0.8); }
 
-        .status-idle svg {
-            color: #ffffff;
-            filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 2px rgba(255, 255, 255, 1));
-        }
+        .play-btn { background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); }
+        .play-btn:hover { background-color: rgba(255,255,255,0.2); }
 
-        .status-in-use svg {
-            color: #1a1a1a;
-            stroke: #333;
-            stroke-width: 0.5px;
-            filter: none;
-            opacity: 0.8;
-        }
+        /* Dynamic Plan Selected Calendar Day */
+        .cal-selected { background-color: #FFFFFF; color: #000000; }
+        .cal-selected span:first-child { color: rgba(0,0,0,0.6); }
 
-        .grid-bg {
-            fill: url(#grid);
-        }
+        /* Full Screen Timer Overlay */
+        #workout-timer-overlay { background-color: #000000; }
+
+
+        /* --- LIGHT THEME OVERRIDES --- */
+        html.light-theme body { background-color: #F2F2F7; color: #000000; }
+        html.light-theme .premium-card { background-color: #FFFFFF; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        html.light-theme .premium-card-light { background-color: #F2F2F7; }
+        html.light-theme .text-white { color: #000000; }
+        html.light-theme .text-gray-300 { color: #666666; }
+        html.light-theme .bg-surfaceLight { background-color: #E5E5EA; color: #000000; }
+        html.light-theme .border-white\/5 { border-color: rgba(0,0,0,0.05); }
+        html.light-theme .border-white\/10 { border-color: rgba(0,0,0,0.1); }
+        html.light-theme .bg-black\/30 { background-color: #F2F2F7; }
+        
+        /* Fix the gradient masking to frosted white instead of black logic */
+        html.light-theme .bg-gradient-to-t { background-image: linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0.7), transparent) !important; }
+        html.light-theme .bg-gradient-to-r { background-image: linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0.8), rgba(255,255,255,0.2)) !important; }
+        
+        html.light-theme .ios-tab-bar { background: rgba(255, 255, 255, 0.85); border-top: 0.5px solid rgba(0,0,0,0.1); }
+        html.light-theme .nav-item { color: #8E8E93; }
+        html.light-theme .nav-active { color: #0A84FF; filter: none; }
+        
+        /* Light Theme Header Fix */
+        html.light-theme #main-header { background-color: rgba(255, 255, 255, 0.85); border-bottom-color: rgba(0, 0, 0, 0.05); }
+        html.light-theme #view-title { color: #000000; }
+
+        /* Map Light Mode Adjustments */
+        html.light-theme .map-wrapper { background: #E5E5EA; box-shadow: 0 0 20px rgba(0,0,0,0.05) inset; border-color: rgba(0,0,0,0.05); }
+        html.light-theme #map-container svg rect[fill="#050505"] { fill: #E5E5EA; }
+        html.light-theme #map-container svg path[stroke="#333"] { stroke: rgba(0,0,0,0.15); }
+        html.light-theme #map-container svg path[stroke="#222"] { stroke: rgba(0,0,0,0.1); }
+        html.light-theme #map-container svg pattern path { stroke: rgba(0,0,0,0.08); }
+        
+        /* Reversed Available and In-Use colors for Light Mode Maps */
+        html.light-theme .status-idle svg { color: #1C1C1E; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); opacity: 1; } /* Available -> Black */
+        html.light-theme .status-in-use svg { color: #FFFFFF; stroke: #C7C7CC; stroke-width: 0.5px; opacity: 0.9; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.05)); } /* In Use -> White */
+        
+        html.light-theme .equip-avail-legend { background-color: #1C1C1E; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        html.light-theme .equip-inuse-legend { background-color: #FFFFFF; border: 1px solid #C7C7CC; }
+
+        /* Workout Timer Light Mode adjustments */
+        html.light-theme #workout-timer-overlay { background-color: #F2F2F7; }
+        html.light-theme #timer-title { color: #000000 !important; }
+        html.light-theme #timer-display { color: #000000 !important; text-shadow: none; }
+        html.light-theme #timer-ring { border-color: rgba(0,0,0,0.1); }
+        html.light-theme .timer-finish-btn { background-color: #1C1C1E !important; color: #FFFFFF !important; box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+
+        /* Interactive buttons dynamic coloring */
+        html.light-theme .timeline-book-btn { background-color: rgba(0,0,0,0.05); color: #000000; border-color: rgba(0,0,0,0.1); }
+        html.light-theme .timeline-book-btn:hover { background-color: rgba(0,0,0,0.1); color: #0A84FF; }
+        
+        html.light-theme .play-btn { background-color: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); }
+        html.light-theme .play-btn:hover { background-color: rgba(0,0,0,0.1); }
+        html.light-theme .play-btn i { color: #000000 !important; }
+
+        html.light-theme .cal-selected { background-color: #0A84FF; color: #FFFFFF; }
+        html.light-theme .cal-selected span:first-child { color: rgba(255,255,255,0.8); }
+        html.light-theme .cal-selected span:last-child { color: #FFFFFF !important; }
     </style>
 </head>
 <body class="antialiased select-none overflow-x-hidden">
 
-<header class="fixed top-0 left-0 right-0 z-50 px-5 pt-safe pb-2 bg-black/90 backdrop-blur-lg border-b border-white/[0.05]">
+<header id="main-header" class="fixed top-0 left-0 right-0 z-40 px-5 pt-safe pb-2 bg-black/90 backdrop-blur-lg border-b border-white/[0.05] transition-colors duration-300">
     <div class="flex justify-between items-end max-w-lg mx-auto h-12">
         <div class="flex items-center gap-2">
             <button id="header-back-btn" onclick="goBack()" class="hidden text-[#0A84FF] active:opacity-50 pb-1 transition-all">
                 <i data-lucide="chevron-left" class="w-8 h-8 -ml-2"></i>
             </button>
-            <h1 id="view-title" class="text-[32px] font-bold tracking-tight leading-none transition-all duration-300">Summary</h1>
+            <h1 id="view-title" class="text-[32px] font-bold tracking-tight leading-none transition-all duration-300 text-white">Summary</h1>
         </div>
-        <div class="w-9 h-9 rounded-full bg-surfaceLight flex items-center justify-center text-textMuted mb-1">
-            <i data-lucide="user" class="w-5 h-5"></i>
-        </div>
+        <button onclick="toggleA11yModal(true)" class="w-9 h-9 rounded-full bg-surfaceLight flex items-center justify-center text-textMuted mb-1 active:scale-95 transition-transform">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+        </button>
     </div>
 </header>
 
-<div class="relative z-10 max-w-lg mx-auto px-5 pt-28 pb-40">
+<div class="relative z-10 max-w-lg mx-auto px-5 pt-28 pb-40" id="app-container">
 
     <main id="view-home" class="view-section view-active space-y-5">
         <div id="home-empty-state" class="premium-card p-6 relative group cursor-pointer" onclick="switchView('vector')">
@@ -306,9 +367,9 @@
                 <div class="w-16 h-16 rounded-full bg-surfaceLight flex items-center justify-center text-[#FF5C77] mb-4">
                     <i data-lucide="target" class="w-8 h-8"></i>
                 </div>
-                <h2 class="text-xl font-bold mb-2">Goal Uncalibrated</h2>
+                <h2 class="text-xl font-bold mb-2 text-white">Goal Uncalibrated</h2>
                 <p class="text-sm text-textMuted mb-6">Define your matrix to generate your program.</p>
-                <button class="px-6 py-3 bg-white text-black font-semibold text-sm rounded-full active:scale-95 transition-transform w-full">Calibrate Matrix</button>
+                <button class="px-6 py-3 bg-white text-black font-semibold text-sm rounded-full active:scale-95 transition-transform w-full shadow-md">Calibrate Matrix</button>
             </div>
         </div>
 
@@ -316,12 +377,12 @@
             <i id="home-watermark-target" data-lucide="target" class="absolute -top-10 -right-6 w-48 h-48 rotate-12 pointer-events-none opacity-10 transition-colors duration-500"></i>
             <div class="relative z-10">
                 <div class="flex justify-between items-center mb-6">
-                    <div class="flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-white"></i><h2 class="font-semibold text-lg">My Program</h2></div>
+                    <div class="flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-white"></i><h2 class="font-semibold text-lg text-white">My Program</h2></div>
                     <span id="home-gender-tag" class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">MALE</span>
                 </div>
                 <div class="bg-black/30 rounded-[16px] p-4 mb-6">
                     <p class="text-xs text-textMuted mb-1">Vector Goal</p>
-                    <p id="home-vector-path" class="text-base font-semibold">---</p>
+                    <p id="home-vector-path" class="text-base font-semibold text-white">---</p>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="flex flex-col">
@@ -337,14 +398,14 @@
 
                 <div class="mt-6 pt-5 border-t border-white/5 flex justify-between items-center">
                     <div class="flex flex-col"><span class="text-[10px] text-textMuted uppercase tracking-wider font-semibold">Weekly Target</span><span id="home-total-time" class="text-xl font-bold text-white">360 min</span></div>
-                    <button onclick="switchView('plan')" class="px-4 py-2 bg-white text-black text-[11px] font-bold rounded-full">View Plan</button>
+                    <button onclick="switchView('plan')" class="px-4 py-2 bg-[#47A1FF] text-white text-[11px] font-bold rounded-full shadow-md active:scale-95 transition-transform">View Plan</button>
                 </div>
             </div>
         </div>
 
         <div id="home-course-card" class="premium-card p-5 hidden">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="font-semibold text-[15px]">Up Next Workouts</h2>
+                <h2 class="font-semibold text-[15px] text-white">Up Next Workouts</h2>
                 <span class="text-[10px] text-[#5ED67A] font-bold bg-[#5ED67A]/10 px-2 py-1 rounded tracking-wide">SELECTED</span>
             </div>
             <div id="home-selected-courses-list" class="space-y-4"></div>
@@ -377,7 +438,7 @@
                             <i data-lucide="x" class="w-3 h-3"></i>
                         </button>
                     </div>
-                    <h3 id="home-coach-time" class="font-bold text-[11px] truncate mt-1.5 transition-colors duration-500">${calendarDaysInfo[0].month} ${calendarDaysInfo[0].date} • 14:00</h3>
+                    <h3 id="home-coach-time" class="font-bold text-[11px] truncate mt-1.5 transition-colors duration-500">...</h3>
                 </div>
             </div>
         </div>
@@ -387,7 +448,7 @@
         <div class="premium-card p-6">
             <div class="flex justify-between items-start mb-6">
                 <div>
-                    <h2 class="font-bold text-xl mb-1">Central Hub</h2>
+                    <h2 class="font-bold text-xl mb-1 text-white">Central Hub</h2>
                     <p class="text-sm text-textMuted">Live & Predicted Load</p>
                 </div>
                 <div class="flex flex-col items-end">
@@ -403,91 +464,16 @@
             </div>
             <div class="chart-container h-[220px] w-full"><canvas id="gymLoadChart"></canvas></div>
             
-            <button onclick="switchView('equipment')" class="w-full py-4 mt-6 rounded-xl bg-white/10 border border-white/10 text-white font-bold text-sm active:scale-[0.98] transition-all hover:bg-white/20 flex items-center justify-center gap-2">
+            <button onclick="switchView('equipment')" class="w-full py-4 mt-6 rounded-xl bg-surfaceLight border border-white/5 text-white font-bold text-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-sm">
                 <i data-lucide="scan-line" class="w-4 h-4"></i> View Live Radar
             </button>
         </div>
     </main>
 
     <main id="view-equipment" class="view-section space-y-5">
-        <div class="premium-card p-1 pb-6 overflow-hidden">
+        <div class="premium-card p-1 pb-6 overflow-hidden flex flex-col items-center">
+            
             <div class="map-wrapper mx-auto rounded-[20px] overflow-hidden border-2 border-white/5 relative shadow-[0_0_30px_rgba(0,0,0,0.8)_inset]" id="map-container">
-                
-                <div class="absolute top-4 left-2 bg-black/60 backdrop-blur-md p-3.5 rounded-xl border border-white/10 z-20 shadow-lg">
-                    <h4 class="text-[9px] font-bold text-textMuted uppercase tracking-widest mb-3 border-b border-white/10 pb-1.5">Floor Status</h4>
-                    <div class="space-y-2.5 text-[11px] font-medium">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-1.5 rounded-sm bg-white shadow-[0_0_8px_#fff]"></div> 
-                                <span>Available</span>
-                            </div>
-                            <span id="equip-avail-count" class="font-bold text-white">--</span>
-                        </div>
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-1.5 rounded-sm bg-[#1a1a1a] border border-[#333]"></div> 
-                                <span class="text-textMuted">In Use</span>
-                            </div>
-                            <span id="equip-use-count" class="font-bold text-textMuted">--</span>
-                        </div>
-                        
-                        <div class="w-full h-px bg-white/5 my-2"></div>
-                        
-                        <div class="flex items-center gap-2 text-[#8E8E93]">
-                            <svg viewBox="0 0 50 24" class="w-5 h-auto fill-current">
-                                <rect x="2" y="2" width="46" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
-                                <rect x="10" y="4" width="35" height="16" fill-opacity="0.2"/>
-                                <line x1="20" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
-                                <line x1="30" y1="4" x2="30" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
-                                <line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
-                                <rect x="4" y="6" width="4" height="12" rx="1" fill="currentColor"/>
-                                <path d="M 25 2 L 10 2 L 8 6" fill="none" stroke="currentColor" stroke-width="1"/>
-                                <path d="M 25 22 L 10 22 L 8 18" fill="none" stroke="currentColor" stroke-width="1"/>
-                            </svg>
-                            <span class="text-[10px]">Treadmill</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-[#8E8E93]">
-                            <svg viewBox="0 0 50 24" class="w-6 h-auto fill-current">
-                                <rect x="4" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
-                                <rect x="36" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
-                                <rect x="14" y="10" width="22" height="4" fill-opacity="0.3" stroke="currentColor" stroke-width="0.5"/>
-                                <line x1="14" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/>
-                                <line x1="36" y1="12" x2="30" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/>
-                                <circle cx="20" cy="12" r="1.5" fill="currentColor"/>
-                                <circle cx="30" cy="12" r="1.5" fill="currentColor"/>
-                            </svg>
-                            <span class="text-[10px]">Cable</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-[#8E8E93]">
-                            <svg viewBox="0 0 50 24" class="w-5 h-auto fill-current">
-                                <rect x="4" y="11" width="40" height="2" fill="currentColor"/>
-                                <ellipse cx="40" cy="12" rx="6" ry="8" fill-opacity="0.15" stroke="currentColor" stroke-width="1"/>
-                                <line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5"/>
-                                <line x1="34" y1="12" x2="46" y2="12" stroke="currentColor" stroke-width="0.5"/>
-                                <rect x="18" y="8" width="8" height="8" rx="2" fill="currentColor"/>
-                                <rect x="32" y="7" width="3" height="10" rx="0.5" fill="currentColor"/>
-                                <line x1="26" y1="12" x2="40" y2="12" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1,1"/>
-                                <rect x="25" y="9" width="2" height="6" fill="currentColor"/>
-                            </svg>
-                            <span class="text-[10px]">Rower</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-[#8E8E93]">
-                            <svg viewBox="0 0 50 24" class="w-6 -ml-0.5 h-auto fill-current">
-                                <rect x="5" y="6" width="38" height="12" rx="4" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
-                                <circle cx="38" cy="12" r="5" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
-                                <circle cx="38" cy="12" r="2" fill="currentColor"/>
-                                <rect x="15" y="7" width="10" height="3" rx="1" fill="currentColor"/>
-                                <rect x="22" y="14" width="10" height="3" rx="1" fill="currentColor"/>
-                                <line x1="20" y1="8" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/>
-                                <line x1="27" y1="15" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/>
-                                <path d="M 38 12 L 45 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                <path d="M 38 12 L 45 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>
-                            <span class="text-[10px]">Elliptical</span>
-                        </div>
-                    </div>
-                </div>
-
                 <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <pattern id="grid" width="5" height="5" patternUnits="userSpaceOnUse">
@@ -497,7 +483,6 @@
                             <path d="M 30 5 L 70 5 L 70 60 L 95 60 L 95 145 L 5 145 L 5 80 L 30 80 Z" />
                         </clipPath>
                     </defs>
-                    
                     <rect width="100" height="150" fill="#050505" clip-path="url(#gym-clip)"/>
                     <rect width="100" height="150" class="grid-bg" clip-path="url(#gym-clip)"/>
                     <path d="M 30 5 L 70 5 L 70 60 L 95 60 L 95 145 L 5 145 L 5 80 L 30 80 Z" fill="none" stroke="#333" stroke-width="0.8" />
@@ -505,11 +490,92 @@
                 </svg>
                 <div id="equipment-layer"></div>
             </div>
+            
+            <div class="mt-4 px-4 pb-2 w-full max-w-[500px]">
+                <h4 class="text-[10px] font-bold text-textMuted uppercase tracking-widest mb-3 border-b border-white/10 pb-1.5">Floor Status Legend</h4>
+                
+                <div class="grid grid-cols-2 gap-x-4 gap-y-3 text-[11px] font-medium">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-1.5 rounded-sm equip-avail-legend"></div> 
+                            <span class="text-white">Available</span>
+                        </div>
+                        <span id="equip-avail-count" class="font-bold text-white">--</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-1.5 rounded-sm equip-inuse-legend"></div> 
+                            <span class="text-textMuted">In Use</span>
+                        </div>
+                        <span id="equip-use-count" class="font-bold text-textMuted">--</span>
+                    </div>
+                    
+                    <div class="col-span-2 w-full h-px bg-white/5 my-1"></div>
+                    
+                    <div class="flex items-center gap-2 text-[#8E8E93]">
+                        <svg viewBox="0 0 50 24" class="w-5 h-auto fill-current">
+                            <rect x="2" y="2" width="46" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+                            <rect x="10" y="4" width="35" height="16" fill-opacity="0.2"/>
+                            <line x1="20" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
+                            <line x1="30" y1="4" x2="30" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
+                            <line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
+                            <rect x="4" y="6" width="4" height="12" rx="1" fill="currentColor"/>
+                            <path d="M 25 2 L 10 2 L 8 6" fill="none" stroke="currentColor" stroke-width="1"/>
+                            <path d="M 25 22 L 10 22 L 8 18" fill="none" stroke="currentColor" stroke-width="1"/>
+                        </svg>
+                        <span class="text-[10px]">Treadmill</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-[#8E8E93]">
+                        <svg viewBox="0 0 50 24" class="w-6 h-auto fill-current">
+                            <rect x="4" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+                            <rect x="36" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+                            <rect x="14" y="10" width="22" height="4" fill-opacity="0.3" stroke="currentColor" stroke-width="0.5"/>
+                            <line x1="14" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/>
+                            <line x1="36" y1="12" x2="30" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/>
+                            <circle cx="20" cy="12" r="1.5" fill="currentColor"/>
+                            <circle cx="30" cy="12" r="1.5" fill="currentColor"/>
+                        </svg>
+                        <span class="text-[10px]">Cable</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-[#8E8E93]">
+                        <svg viewBox="0 0 50 24" class="w-5 h-auto fill-current">
+                            <rect x="4" y="11" width="40" height="2" fill="currentColor"/>
+                            <ellipse cx="40" cy="12" rx="6" ry="8" fill-opacity="0.15" stroke="currentColor" stroke-width="1"/>
+                            <line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5"/>
+                            <line x1="34" y1="12" x2="46" y2="12" stroke="currentColor" stroke-width="0.5"/>
+                            <rect x="18" y="8" width="8" height="8" rx="2" fill="currentColor"/>
+                            <rect x="32" y="7" width="3" height="10" rx="0.5" fill="currentColor"/>
+                            <line x1="26" y1="12" x2="40" y2="12" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1,1"/>
+                            <rect x="25" y="9" width="2" height="6" fill="currentColor"/>
+                        </svg>
+                        <span class="text-[10px]">Rower</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-[#8E8E93]">
+                        <svg viewBox="0 0 50 24" class="w-6 -ml-0.5 h-auto fill-current">
+                            <rect x="5" y="6" width="38" height="12" rx="4" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+                            <circle cx="38" cy="12" r="5" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
+                            <circle cx="38" cy="12" r="2" fill="currentColor"/>
+                            <rect x="15" y="7" width="10" height="3" rx="1" fill="currentColor"/>
+                            <rect x="22" y="14" width="10" height="3" rx="1" fill="currentColor"/>
+                            <line x1="20" y1="8" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/>
+                            <line x1="27" y1="15" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/>
+                            <path d="M 38 12 L 45 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M 38 12 L 45 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        <span class="text-[10px]">Elliptical</span>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </main>
 
     <main id="view-vector" class="view-section space-y-5">
-        <div class="flex justify-between items-center px-1"><h2 id="vector-main-title" class="font-bold text-xl">Calibration</h2><button id="reset-btn" class="hidden text-xs font-bold active:opacity-50 transition-opacity text-[#47A1FF]">Reset</button></div>
+        <div class="flex justify-between items-center px-1"><h2 id="vector-main-title" class="font-bold text-xl text-white">Calibration</h2><button id="reset-btn" class="hidden text-xs font-bold active:opacity-50 transition-opacity text-[#47A1FF]">Reset</button></div>
         <div id="matrix-step-1" class="space-y-4 transition-all duration-300">
             <div class="bg-surfaceLight p-1 rounded-lg flex relative">
                 <button id="btn-male" onclick="setGender('male')" class="flex-1 py-2 text-xs font-bold rounded-md transition-all relative z-10 text-white bg-[#47A1FF] shadow-sm">Male</button>
@@ -532,9 +598,9 @@
             </div>
         </div>
         <div class="flex gap-3" id="status-cards">
-            <div class="premium-card p-4 flex-1 relative overflow-hidden"><div id="current-icon-container" class="absolute inset-0 z-0"></div><div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent z-0"></div><div class="relative z-10 mt-6"><p class="text-[10px] text-textMuted mb-1">Baseline</p><div id="current-display" class="text-sm font-bold truncate">---</div></div></div>
-            <div class="flex items-center text-surfaceLight z-10" id="matrix-arrow"><i data-lucide="arrow-right" class="w-4 h-4"></i></div>
-            <div class="premium-card p-4 flex-1 relative overflow-hidden"><div id="target-icon-container" class="absolute inset-0 z-0"></div><div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent z-0"></div><div class="relative z-10 mt-6"><p class="text-[10px] text-textMuted mb-1">Target</p><div id="target-display" class="text-sm font-bold truncate">---</div></div></div>
+            <div class="premium-card p-4 flex-1 relative overflow-hidden border border-white/5"><div id="current-icon-container" class="absolute inset-0 z-0"></div><div class="absolute inset-0 bg-gradient-to-t from-[#1C1C1E] to-transparent z-0"></div><div class="relative z-10 mt-6"><p class="text-[10px] text-textMuted mb-1">Baseline</p><div id="current-display" class="text-sm font-bold truncate text-white">---</div></div></div>
+            <div class="flex items-center text-textMuted z-10" id="matrix-arrow"><i data-lucide="arrow-right" class="w-4 h-4"></i></div>
+            <div class="premium-card p-4 flex-1 relative overflow-hidden border border-white/5"><div id="target-icon-container" class="absolute inset-0 z-0"></div><div class="absolute inset-0 bg-gradient-to-t from-[#1C1C1E] to-transparent z-0"></div><div class="relative z-10 mt-6"><p class="text-[10px] text-textMuted mb-1">Target</p><div id="target-display" class="text-sm font-bold truncate text-white">---</div></div></div>
         </div>
         
         <div id="exception-banner" class="hidden premium-card p-5 bg-[#FF5C77]/10 border border-[#FF5C77]/20">
@@ -549,41 +615,41 @@
 
         <div id="prescription-section" class="hidden space-y-5">
             <div class="premium-card p-6">
-                <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-sm">Macro Split</h3><div id="macro-legend" class="text-[9px] text-textMuted flex flex-col gap-1"></div></div>
+                <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-sm text-white">Macro Split</h3><div id="macro-legend" class="text-[9px] text-textMuted flex flex-col gap-1"></div></div>
                 <div class="chart-container h-[180px]"><canvas id="macroChart"></canvas></div>
             </div>
-            <div class="premium-card p-6"><h3 class="font-bold text-sm mb-4">System Focus</h3><div class="chart-container h-[180px]"><canvas id="microChart"></canvas></div></div>
+            <div class="premium-card p-6"><h3 class="font-bold text-sm mb-4 text-white">System Focus</h3><div class="chart-container h-[180px]"><canvas id="microChart"></canvas></div></div>
             <div class="premium-card p-6" id="energy-guide"></div>
             
-            <button onclick="switchView('plan')" class="w-full py-4 mt-2 rounded-xl bg-white text-black font-bold text-base active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg">
+            <button onclick="switchView('plan')" class="w-full py-4 mt-2 rounded-xl bg-[#47A1FF] text-white font-bold text-base active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg">
                 Generate My Plan <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
         </div>
     </main>
 
     <main id="view-plan" class="view-section space-y-6">
-        <div id="plan-empty" class="premium-card py-20 flex flex-col items-center justify-center text-center px-6">
+        <div id="plan-empty" class="premium-card py-20 flex flex-col items-center justify-center text-center px-6 border border-white/5">
             <i data-lucide="calendar-x-2" class="w-10 h-10 text-textMuted mb-4"></i>
-            <h2 class="text-lg font-bold">No Active Plan</h2>
+            <h2 class="text-lg font-bold text-white">No Active Plan</h2>
             <p class="text-xs text-textMuted mb-6">Define your matrix goals first.</p>
-            <button onclick="switchView('vector')" class="px-6 py-3 bg-white text-black font-bold text-xs rounded-full active:scale-95 transition-transform">Calibrate Now</button>
+            <button onclick="switchView('vector')" class="px-6 py-3 bg-[#47A1FF] text-white font-bold text-xs rounded-full active:scale-95 transition-transform shadow-md">Calibrate Now</button>
         </div>
         <div id="plan-content" class="hidden space-y-6">
             <div>
-                <h2 class="font-bold text-[18px] mb-3">Recommended</h2>
+                <h2 class="font-bold text-[18px] mb-3 text-white">Recommended</h2>
                 <div id="course-grid" class="flex flex-nowrap gap-4 overflow-x-auto touch-pan-x no-scrollbar snap-x snap-mandatory pb-1 after:content-[''] after:w-4 after:shrink-0 w-full"></div>
             </div>
             <div id="visual-calendar-grid" class="flex justify-between bg-surfaceLight/50 p-2 rounded-2xl"></div>
-            <div class="premium-card p-6"><h3 id="selected-date-display" class="font-bold text-lg mb-4">Today</h3><div id="daily-schedule-panel" class="space-y-6"></div></div>
+            <div class="premium-card p-6 border border-white/5"><h3 id="selected-date-display" class="font-bold text-lg mb-4 text-white">Today</h3><div id="daily-schedule-panel" class="space-y-6"></div></div>
         </div>
     </main>
 
     <main id="view-coach" class="view-section space-y-4"></main>
 
     <main id="view-coach-detail" class="view-section space-y-6">
-        <div id="coach-detail-header" class="premium-card p-6 flex flex-col items-center text-center relative overflow-hidden"></div>
-        <div><h3 class="font-bold text-lg mb-4">Dates</h3><div id="coach-calendar" class="flex gap-3 overflow-x-auto no-scrollbar pb-2 after:content-[''] after:w-4 after:shrink-0"></div></div>
-        <div id="coach-slots-container" class="hidden"><h3 class="font-bold text-lg mb-4">Time</h3><div id="coach-slots" class="grid grid-cols-3 gap-3"></div></div>
+        <div id="coach-detail-header" class="premium-card p-6 flex flex-col items-center text-center relative overflow-hidden border border-white/5"></div>
+        <div><h3 class="font-bold text-lg mb-4 text-white">Dates</h3><div id="coach-calendar" class="flex gap-3 overflow-x-auto no-scrollbar pb-2 after:content-[''] after:w-4 after:shrink-0"></div></div>
+        <div id="coach-slots-container" class="hidden"><h3 class="font-bold text-lg mb-4 text-white">Time</h3><div id="coach-slots" class="grid grid-cols-3 gap-3"></div></div>
         <div id="book-actions-container" class="flex gap-3 mt-4">
             <button id="book-session-btn" class="py-4 rounded-xl font-bold text-sm transition-all duration-300 flex justify-center items-center pointer-events-none bg-surfaceLight text-textMuted">Select Slot</button>
             <button id="book-athome-btn" class="hidden py-4 rounded-xl font-bold text-sm transition-all duration-300 flex justify-center items-center pointer-events-none bg-surfaceLight text-textMuted">Book At-Home</button>
@@ -591,7 +657,7 @@
     </main>
 </div>
 
-<nav class="fixed bottom-0 left-0 right-0 z-50 ios-tab-bar pt-2 pb-[env(safe-area-inset-bottom)] h-auto">
+<nav class="fixed bottom-0 left-0 right-0 z-40 ios-tab-bar pt-2 pb-[env(safe-area-inset-bottom)] h-auto transition-colors duration-300">
     <div class="flex justify-around items-center w-full px-2">
         <button onclick="switchView('home')" id="nav-home" class="nav-item flex flex-col items-center gap-1 flex-1 py-1"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="text-[9px] font-medium mt-1">Summary</span></button>
         <button onclick="switchView('gym')" id="nav-gym" class="nav-item flex flex-col items-center gap-1 flex-1 py-1"><i data-lucide="activity-square" class="w-5 h-5"></i><span class="text-[9px] font-medium mt-1">Live Gym</span></button>
@@ -601,8 +667,37 @@
     </div>
 </nav>
 
+<!-- Accessibility & Settings Panel -->
+<div id="a11y-overlay" class="fixed inset-0 bg-black/60 z-50 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm" onclick="toggleA11yModal(false)"></div>
+<div id="a11y-modal" class="fixed bottom-0 left-0 right-0 z-50 premium-card rounded-b-none translate-y-full transition-transform duration-300 ease-out p-6 pb-safe">
+    <div class="w-10 h-1.5 bg-white/20 rounded-full mx-auto mb-6"></div>
+    <h2 class="text-xl font-bold mb-6 text-white text-center">Settings</h2>
+    
+    <div class="space-y-6">
+        <div>
+            <p class="text-xs text-textMuted uppercase tracking-widest font-bold mb-3">Display Theme</p>
+            <div class="bg-surfaceLight p-1 rounded-xl flex">
+                <button onclick="setTheme('dark')" id="theme-btn-dark" class="flex-1 py-2.5 text-sm font-bold rounded-lg transition-all text-white bg-black/50 shadow-sm border border-white/10 flex items-center justify-center gap-2">
+                    <i data-lucide="moon" class="w-4 h-4"></i> Dark
+                </button>
+                <button onclick="setTheme('light')" id="theme-btn-light" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-textMuted hover:text-white flex items-center justify-center gap-2">
+                    <i data-lucide="sun" class="w-4 h-4"></i> Light
+                </button>
+            </div>
+        </div>
 
-<div id="workout-timer-overlay" class="fixed inset-0 z-[100] hidden bg-black flex-col items-center justify-center transition-opacity duration-500 opacity-0">
+        <div>
+            <p class="text-xs text-textMuted uppercase tracking-widest font-bold mb-3">Font Size</p>
+            <div class="bg-surfaceLight p-1 rounded-xl flex">
+                <button onclick="setFontScale('100%')" id="font-btn-100" class="font-size-btn flex-1 py-2 text-sm font-bold rounded-lg transition-all text-white bg-[#0A84FF] shadow-sm flex items-center justify-center">A</button>
+                <button onclick="setFontScale('110%')" id="font-btn-110" class="font-size-btn flex-1 py-2 text-lg font-medium rounded-lg transition-all text-textMuted hover:text-white flex items-center justify-center">A+</button>
+                <button onclick="setFontScale('120%')" id="font-btn-120" class="font-size-btn flex-1 py-2 text-xl font-medium rounded-lg transition-all text-textMuted hover:text-white flex items-center justify-center">A++</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="workout-timer-overlay" class="fixed inset-0 z-[100] hidden flex-col items-center justify-center transition-colors duration-500 opacity-0">
     <div class="absolute inset-0 z-0 opacity-20" id="timer-bg-glow"></div>
     <h2 id="timer-title" class="relative z-10 text-white font-bold text-2xl mb-2 drop-shadow-md">Workout</h2>
     <p id="timer-category" class="relative z-10 text-[10px] uppercase tracking-widest font-semibold mb-12 drop-shadow">CATEGORY</p>
@@ -613,16 +708,14 @@
         <div class="text-6xl font-black tabular-nums tracking-tight text-white drop-shadow-lg" id="timer-display">00:00</div>
     </div>
 
-    <button onclick="stopWorkoutTimer()" class="relative z-10 px-10 py-4 rounded-full bg-white text-black font-bold text-lg active:scale-95 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+    <button onclick="stopWorkoutTimer()" class="relative z-10 px-10 py-4 rounded-full bg-white text-black font-bold text-lg active:scale-95 transition-transform timer-finish-btn shadow-[0_0_20px_rgba(255,255,255,0.3)]">
         Finish
     </button>
 </div>
 
 <script>
 function refreshIcons(options) { 
-    if (typeof window.lucide !== 'undefined') {
-        window.lucide.createIcons(options); 
-    }
+    if (typeof window.lucide !== 'undefined') { window.lucide.createIcons(options); }
 }
 
 const viewTitles = { 'home': 'Summary', 'gym': 'Live Gym', 'vector': 'Matrix', 'plan': 'Schedule', 'coach': 'Private Classes', 'equipment': 'Live Radar' };
@@ -655,235 +748,143 @@ const courseDatabase = {
 const bfpThresholds = { male: { 1: '< 15%', 2: '15-25%', 3: '> 25%' }, female: { 1: '< 22%', 2: '23-35%', 3: '> 35%' } };
 let currentCell = null, targetCell = null;
 let macroChart = null, microChart = null, homeMacroChart = null, homeMicroChart = null, gymLoadChart = null;
+let lastChartValues = null; 
 const TOTAL_TARGET_MINUTES = 360;
 
 let globalCategoryLogged = { 'RESISTANCE': 0, 'METCON': 0, 'Z2': 0, 'HIIT': 0, 'Z1': 0 };
 window.currentFinalPlan = null;
+let weeklySchedulePlan = {}; let selectedDayIndex = 0; let selectedCourses = []; let currentBooking = null;
 
-let weeklySchedulePlan = {};
-let selectedDayIndex = 0; 
-let selectedCourses = []; 
-let currentBooking = null;
-
-// Equipment Map State & SVGs
-const EQUIP_STATUS = {
-    IDLE: { id: 'idle', class: 'status-idle' },
-    IN_USE: { id: 'in_use', class: 'status-in-use' }
-};
-
+const EQUIP_STATUS = { IDLE: { id: 'idle', class: 'status-idle' }, IN_USE: { id: 'in_use', class: 'status-in-use' } };
 const EQUIP_SVGS = {
-    TREADMILL: `
-        <svg viewBox="0 0 50 24" class="w-6 h-auto fill-current">
-            <rect x="2" y="2" width="46" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
-            <rect x="10" y="4" width="35" height="16" fill-opacity="0.2"/>
-            <line x1="20" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
-            <line x1="30" y1="4" x2="30" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
-            <line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
-            <rect x="4" y="6" width="4" height="12" rx="1" fill="currentColor"/>
-            <path d="M 25 2 L 10 2 L 8 6" fill="none" stroke="currentColor" stroke-width="1"/>
-            <path d="M 25 22 L 10 22 L 8 18" fill="none" stroke="currentColor" stroke-width="1"/>
-        </svg>`,
-    CABLE: `
-        <svg viewBox="0 0 50 24" class="w-7 h-auto fill-current">
-            <rect x="4" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
-            <rect x="36" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
-            <rect x="14" y="10" width="22" height="4" fill-opacity="0.3" stroke="currentColor" stroke-width="0.5"/>
-            <line x1="14" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/>
-            <line x1="36" y1="12" x2="30" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/>
-            <circle cx="20" cy="12" r="1.5" fill="currentColor"/>
-            <circle cx="30" cy="12" r="1.5" fill="currentColor"/>
-        </svg>`,
-    ELLIPTICAL: `
-        <svg viewBox="0 0 50 24" class="w-7 h-auto fill-current">
-            <rect x="5" y="6" width="38" height="12" rx="4" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
-            <circle cx="38" cy="12" r="5" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
-            <circle cx="38" cy="12" r="2" fill="currentColor"/>
-            <rect x="15" y="7" width="10" height="3" rx="1" fill="currentColor"/>
-            <rect x="22" y="14" width="10" height="3" rx="1" fill="currentColor"/>
-            <line x1="20" y1="8" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/>
-            <line x1="27" y1="15" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/>
-            <path d="M 38 12 L 45 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M 38 12 L 45 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>`,
-    ROWER: `
-        <svg viewBox="0 0 50 24" class="w-6 h-auto fill-current">
-            <rect x="4" y="11" width="40" height="2" fill="currentColor"/>
-            <ellipse cx="40" cy="12" rx="6" ry="8" fill-opacity="0.15" stroke="currentColor" stroke-width="1"/>
-            <line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5"/>
-            <line x1="34" y1="12" x2="46" y2="12" stroke="currentColor" stroke-width="0.5"/>
-            <rect x="18" y="8" width="8" height="8" rx="2" fill="currentColor"/>
-            <rect x="32" y="7" width="3" height="10" rx="0.5" fill="currentColor"/>
-            <line x1="26" y1="12" x2="40" y2="12" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1,1"/>
-            <rect x="25" y="9" width="2" height="6" fill="currentColor"/>
-        </svg>`
+    TREADMILL: `<svg viewBox="0 0 50 24" class="w-6 h-auto fill-current"><rect x="2" y="2" width="46" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/><rect x="10" y="4" width="35" height="16" fill-opacity="0.2"/><line x1="20" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/><line x1="30" y1="4" x2="30" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/><line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/><rect x="4" y="6" width="4" height="12" rx="1" fill="currentColor"/><path d="M 25 2 L 10 2 L 8 6" fill="none" stroke="currentColor" stroke-width="1"/><path d="M 25 22 L 10 22 L 8 18" fill="none" stroke="currentColor" stroke-width="1"/></svg>`,
+    CABLE: `<svg viewBox="0 0 50 24" class="w-7 h-auto fill-current"><rect x="4" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/><rect x="36" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/><rect x="14" y="10" width="22" height="4" fill-opacity="0.3" stroke="currentColor" stroke-width="0.5"/><line x1="14" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/><line x1="36" y1="12" x2="30" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/><circle cx="20" cy="12" r="1.5" fill="currentColor"/><circle cx="30" cy="12" r="1.5" fill="currentColor"/></svg>`,
+    ELLIPTICAL: `<svg viewBox="0 0 50 24" class="w-7 h-auto fill-current"><rect x="5" y="6" width="38" height="12" rx="4" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/><circle cx="38" cy="12" r="5" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/><circle cx="38" cy="12" r="2" fill="currentColor"/><rect x="15" y="7" width="10" height="3" rx="1" fill="currentColor"/><rect x="22" y="14" width="10" height="3" rx="1" fill="currentColor"/><line x1="20" y1="8" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/><line x1="27" y1="15" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/><path d="M 38 12 L 45 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M 38 12 L 45 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    ROWER: `<svg viewBox="0 0 50 24" class="w-6 h-auto fill-current"><rect x="4" y="11" width="40" height="2" fill="currentColor"/><ellipse cx="40" cy="12" rx="6" ry="8" fill-opacity="0.15" stroke="currentColor" stroke-width="1"/><line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5"/><line x1="34" y1="12" x2="46" y2="12" stroke="currentColor" stroke-width="0.5"/><rect x="18" y="8" width="8" height="8" rx="2" fill="currentColor"/><rect x="32" y="7" width="3" height="10" rx="0.5" fill="currentColor"/><line x1="26" y1="12" x2="40" y2="12" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1,1"/><rect x="25" y="9" width="2" height="6" fill="currentColor"/></svg>`
 };
 
 let equipMachines = [];
-
 function initEquipmentMap() {
-    const layer = document.getElementById('equipment-layer');
-    if (!layer) return;
-    
+    const layer = document.getElementById('equipment-layer'); if (!layer) return;
     equipMachines = [];
-    // Left col: Treadmills
-    for (let i = 0; i < 14; i++) {
-        equipMachines.push({
-            id: `TR-${String(i+1).padStart(2, '0')}`, typeHtml: EQUIP_SVGS.TREADMILL,
-            x: 35, y: 10 + i * 5.2, status: EQUIP_STATUS.IDLE
-        });
-    }
-    // Middle col: Cable Crossovers
-    for (let i = 0; i < 14; i++) {
-        equipMachines.push({
-            id: `CB-${String(i+1).padStart(2, '0')}`, typeHtml: EQUIP_SVGS.CABLE,
-            x: 50, y: 10 + i * 5.2, status: EQUIP_STATUS.IDLE
-        });
-    }
-    // Right col: Rowers and Ellipticals
-    for (let i = 0; i < 14; i++) {
-        const isRower = i < 7;
-        equipMachines.push({
-            id: isRower ? `RW-${String(i + 1).padStart(2, '0')}` : `EL-${String(i - 6).padStart(2, '0')}`,
-            typeHtml: isRower ? EQUIP_SVGS.ROWER : EQUIP_SVGS.ELLIPTICAL,
-            x: 65, y: 10 + i * 5.2, status: EQUIP_STATUS.IDLE
-        });
-    }
+    for (let i = 0; i < 14; i++) equipMachines.push({ id: `TR-${String(i+1).padStart(2, '0')}`, typeHtml: EQUIP_SVGS.TREADMILL, x: 35, y: 10 + i * 5.2, status: EQUIP_STATUS.IDLE });
+    for (let i = 0; i < 14; i++) equipMachines.push({ id: `CB-${String(i+1).padStart(2, '0')}`, typeHtml: EQUIP_SVGS.CABLE, x: 50, y: 10 + i * 5.2, status: EQUIP_STATUS.IDLE });
+    for (let i = 0; i < 14; i++) { const isRower = i < 7; equipMachines.push({ id: isRower ? `RW-${String(i + 1).padStart(2, '0')}` : `EL-${String(i - 6).padStart(2, '0')}`, typeHtml: isRower ? EQUIP_SVGS.ROWER : EQUIP_SVGS.ELLIPTICAL, x: 65, y: 10 + i * 5.2, status: EQUIP_STATUS.IDLE }); }
     renderEquipmentMap();
 }
 
 function renderEquipmentMap() {
-    const layer = document.getElementById('equipment-layer');
-    if (!layer) return;
+    const layer = document.getElementById('equipment-layer'); if (!layer) return;
     layer.innerHTML = '';
     equipMachines.forEach(m => {
         const div = document.createElement('div');
         div.className = `equipment ${m.status.class}`;
-        div.style.left = `${m.x}%`;
-        div.style.top = `${m.y}%`;
-        div.innerHTML = m.typeHtml;
+        div.style.left = `${m.x}%`; div.style.top = `${m.y}%`; div.innerHTML = m.typeHtml;
         layer.appendChild(div);
     });
 }
 
-// Pseudo-random generator with string seed
 function getSeededRandom(seedStr) {
-    let hash = 0;
-    for (let i = 0; i < seedStr.length; i++) {
-        hash = ((hash << 5) - hash) + seedStr.charCodeAt(i);
-        hash |= 0;
-    }
-    const x = Math.sin(hash++) * 10000;
-    return x - Math.floor(x);
+    let hash = 0; for (let i = 0; i < seedStr.length; i++) { hash = ((hash << 5) - hash) + seedStr.charCodeAt(i); hash |= 0; }
+    const x = Math.sin(hash++) * 10000; return x - Math.floor(x);
 }
 
 window.updateEquipmentStatus = function() {
     if (!equipMachines || equipMachines.length === 0) return;
-    
-    const now = new Date();
-    const hour = now.getHours();
-    const minutes = now.getMinutes();
-    const isClosed = hour >= 23 || hour < 9;
-    
-    // Create seed based on current 30-min block
-    const halfHourPeriod = Math.floor(minutes / 30);
-    const timeSeedStr = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${hour}-${halfHourPeriod}`;
-    
-    let availCount = 0;
-    let useCount = 0;
+    const now = new Date(); const hour = now.getHours(); const minutes = now.getMinutes(); const isClosed = hour >= 23 || hour < 9;
+    const timeSeedStr = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${hour}-${Math.floor(minutes / 30)}`;
+    let availCount = 0, useCount = 0;
     
     if (isClosed) {
-        equipMachines.forEach(m => {
-            m.status = EQUIP_STATUS.IN_USE; 
-            useCount++;
-        });
+        equipMachines.forEach(m => { m.status = EQUIP_STATUS.IN_USE; useCount++; });
     } else {
         let currentLoad = window.gymLiveDataCache ? window.gymLiveDataCache.currentCount : 30;
-        // Calculate probability of being IDLE inversely to gym load (assumed max cap around 70)
-        let idleProb = (70 - currentLoad) / 70;
-        idleProb = Math.max(0.1, Math.min(0.9, idleProb)); // Keep it reasonable
-
+        let idleProb = Math.max(0.1, Math.min(0.9, (70 - currentLoad) / 70));
         equipMachines.forEach(m => {
-            const seed = `${timeSeedStr}-${m.id}`;
-            const rand = getSeededRandom(seed);
-            
-            if (rand < idleProb) {
-                m.status = EQUIP_STATUS.IDLE;
-                availCount++;
-            } else {
-                m.status = EQUIP_STATUS.IN_USE;
-                useCount++;
-            }
+            if (getSeededRandom(`${timeSeedStr}-${m.id}`) < idleProb) { m.status = EQUIP_STATUS.IDLE; availCount++; } 
+            else { m.status = EQUIP_STATUS.IN_USE; useCount++; }
         });
     }
-    
     renderEquipmentMap();
-    
-    const availEl = document.getElementById('equip-avail-count');
-    const useEl = document.getElementById('equip-use-count');
-    if (availEl) availEl.innerText = availCount;
-    if (useEl) useEl.innerText = useCount;
+    const availEl = document.getElementById('equip-avail-count'), useEl = document.getElementById('equip-use-count');
+    if (availEl) availEl.innerText = availCount; if (useEl) useEl.innerText = useCount;
 }
 
 function saveUserData() {
-    localStorage.setItem('gym_selectedCourses', JSON.stringify(selectedCourses));
-    localStorage.setItem('gym_currentBooking', JSON.stringify(currentBooking));
-    localStorage.setItem('gym_currentCell', JSON.stringify(currentCell));
-    localStorage.setItem('gym_targetCell', JSON.stringify(targetCell));
+    localStorage.setItem('gym_selectedCourses', JSON.stringify(selectedCourses)); localStorage.setItem('gym_currentBooking', JSON.stringify(currentBooking));
+    localStorage.setItem('gym_currentCell', JSON.stringify(currentCell)); localStorage.setItem('gym_targetCell', JSON.stringify(targetCell));
     localStorage.setItem('gym_globalCategoryLogged', JSON.stringify(globalCategoryLogged));
 }
 function loadUserData() {
-    const courses = localStorage.getItem('gym_selectedCourses');
-    const booking = localStorage.getItem('gym_currentBooking');
-    const cell = localStorage.getItem('gym_currentCell');
-    const target = localStorage.getItem('gym_targetCell');
-    const logged = localStorage.getItem('gym_globalCategoryLogged');
-    if (courses) selectedCourses = JSON.parse(courses);
-    if (booking) currentBooking = JSON.parse(booking);
-    if (cell) currentCell = JSON.parse(cell);
-    if (target) targetCell = JSON.parse(target);
-    if (logged) globalCategoryLogged = JSON.parse(logged);
+    const c = localStorage.getItem('gym_selectedCourses'), b = localStorage.getItem('gym_currentBooking'), cur = localStorage.getItem('gym_currentCell'), t = localStorage.getItem('gym_targetCell'), l = localStorage.getItem('gym_globalCategoryLogged');
+    if (c) selectedCourses = JSON.parse(c); if (b) currentBooking = JSON.parse(b); if (cur) currentCell = JSON.parse(cur); if (t) targetCell = JSON.parse(t); if (l) globalCategoryLogged = JSON.parse(l);
 }
 loadUserData();
 
-const calendarDaysInfo = [];
-const today = new Date();
-const currentDay = today.getDate();
+const calendarDaysInfo = []; const today = new Date(); const currentDay = today.getDate();
 for(let i=0; i<7; i++) {
-    const date = new Date(today);
-    date.setDate(currentDay + i);
-    const dayOfWeek = date.getDay();
-    calendarDaysInfo.push({ 
-        date: date.getDate(), 
-        month: date.toLocaleString('en', { month: 'short' }), 
-        dayName: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][dayOfWeek],
-        isCurrentMonth: true 
-    });
+    const date = new Date(today); date.setDate(currentDay + i);
+    calendarDaysInfo.push({ date: date.getDate(), month: date.toLocaleString('en', { month: 'short' }), dayName: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][date.getDay()], isCurrentMonth: true });
 }
 const weekMap = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-
 function isTimePassed(date, time) {
-    const now = new Date();
-    const today = now.getDate();
-    const [hours, minutes] = time.split(':').map(Number);
-    const scheduleDate = new Date();
-    scheduleDate.setDate(date);
-    scheduleDate.setHours(hours, minutes, 0, 0);
+    const now = new Date(); const [hours, minutes] = time.split(':').map(Number);
+    const scheduleDate = new Date(); scheduleDate.setDate(date); scheduleDate.setHours(hours, minutes, 0, 0);
     return scheduleDate < now;
 }
+function isToday(date) { return date === new Date().getDate(); }
 
-function isToday(date) {
-    const now = new Date();
-    return date === now.getDate();
+function toggleA11yModal(show) {
+    const overlay = document.getElementById('a11y-overlay'), modal = document.getElementById('a11y-modal');
+    if (show) {
+        overlay.classList.remove('hidden'); void overlay.offsetWidth;
+        overlay.classList.remove('opacity-0'); modal.classList.remove('translate-y-full');
+    } else {
+        overlay.classList.add('opacity-0'); modal.classList.add('translate-y-full');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+    }
+}
+
+function setTheme(theme) {
+    const html = document.documentElement;
+    const btnDark = document.getElementById('theme-btn-dark');
+    const btnLight = document.getElementById('theme-btn-light');
+    
+    if (theme === 'light') {
+        html.classList.add('light-theme');
+        btnLight.className = "flex-1 py-2.5 text-sm font-bold rounded-lg transition-all text-black bg-white shadow-sm border border-black/10 flex items-center justify-center gap-2";
+        btnDark.className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-textMuted hover:text-white flex items-center justify-center gap-2";
+    } else {
+        html.classList.remove('light-theme');
+        btnDark.className = "flex-1 py-2.5 text-sm font-bold rounded-lg transition-all text-white bg-black/50 shadow-sm border border-white/10 flex items-center justify-center gap-2";
+        btnLight.className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-textMuted hover:text-white flex items-center justify-center gap-2";
+    }
+}
+
+function setFontScale(scaleStr) {
+    document.documentElement.style.setProperty('--font-scale', scaleStr === '100%' ? 1 : (scaleStr === '110%' ? 1.1 : 1.2));
+    
+    const btns = document.querySelectorAll('.font-size-btn');
+    const activeClasses = ['text-white', 'bg-[#0A84FF]', 'shadow-sm', 'font-bold'];
+    const inactiveClasses = ['text-textMuted', 'hover:text-white', 'font-medium'];
+
+    btns.forEach(b => {
+        b.classList.remove(...activeClasses);
+        b.classList.add(...inactiveClasses);
+    });
+    
+    const clickedBtnId = scaleStr === '100%' ? 'font-btn-100' : (scaleStr === '110%' ? 'font-btn-110' : 'font-btn-120');
+    const btn = document.getElementById(clickedBtnId);
+    if (btn) {
+        btn.classList.remove(...inactiveClasses);
+        btn.classList.add(...activeClasses);
+    }
 }
 
 function goBack() {
-    if (document.getElementById('view-coach-detail').classList.contains('view-active')) {
-        switchView('coach'); 
-    } else if (document.getElementById('view-equipment').classList.contains('view-active')) {
-        switchView('gym'); 
-    } else {
-        switchView('home');
-    }
+    if (document.getElementById('view-coach-detail').classList.contains('view-active')) switchView('coach'); 
+    else if (document.getElementById('view-equipment').classList.contains('view-active')) switchView('gym'); 
+    else switchView('home');
 }
 
 function switchView(id) {
@@ -898,19 +899,15 @@ function switchView(id) {
     
     const backBtn = document.getElementById('header-back-btn');
     const titleEl = document.getElementById('view-title');
-    
     if (viewTitles[id]) titleEl.innerText = viewTitles[id];
     
     if (id === 'home') { 
         backBtn.classList.add('hidden'); 
-        titleEl.className = 'text-[32px] font-bold transition-all duration-300 tracking-tight leading-none'; 
+        titleEl.className = 'text-[32px] font-bold transition-all duration-300 tracking-tight leading-none text-white'; 
     } else { 
         backBtn.classList.remove('hidden'); 
-        if (id === 'coach-detail' || id === 'equipment') {
-            titleEl.className = 'text-xl ml-1 font-bold transition-all duration-300'; 
-        } else {
-            titleEl.className = 'text-[32px] font-bold transition-all duration-300 tracking-tight leading-none'; 
-        }
+        if (id === 'coach-detail' || id === 'equipment') titleEl.className = 'text-xl ml-1 font-bold transition-all duration-300 text-white'; 
+        else titleEl.className = 'text-[32px] font-bold transition-all duration-300 tracking-tight leading-none text-white'; 
     }
     
     if (id === 'plan') { 
@@ -921,16 +918,13 @@ function switchView(id) {
     
     if (id === 'coach') renderCoachList();
     if (id === 'gym') setTimeout(renderGymChart, 50);
-    if (id === 'equipment') { setTimeout(() => window.updateEquipmentStatus(), 50); }
-    
+    if (id === 'equipment') setTimeout(() => window.updateEquipmentStatus(), 50);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function setGender(gender) {
-    const previousGender = currentGender;
-    currentGender = gender;
-    const btnM = document.getElementById('btn-male');
-    const btnF = document.getElementById('btn-female');
+    const previousGender = currentGender; currentGender = gender;
+    const btnM = document.getElementById('btn-male'), btnF = document.getElementById('btn-female');
     
     if (gender === 'male') { 
         btnM.className = "flex-1 py-2 text-xs font-bold rounded-md transition-all relative z-10 text-white bg-[#47A1FF] shadow-sm"; 
@@ -945,60 +939,48 @@ function setGender(gender) {
     document.getElementById('reset-btn').style.color = themes[gender].glow;
     
     if (previousGender !== undefined && previousGender !== gender) {
-        currentCell = null;
-        targetCell = null;
-        localStorage.removeItem('gym_currentCell');
-        localStorage.removeItem('gym_targetCell');
+        currentCell = targetCell = null;
+        localStorage.removeItem('gym_currentCell'); localStorage.removeItem('gym_targetCell');
         initGrid();
         document.getElementById('matrix-step-1').classList.remove('hidden');
         document.getElementById('vector-main-title').innerText = 'Calibration';
         document.getElementById('matrix-arrow').style.color = '';
         document.getElementById('reset-btn').classList.add('hidden');
         ['current-display', 'target-display'].forEach(id => { 
-            const el = document.getElementById(id);
-            if(el) { el.innerText = '---'; el.style.color = ''; }
+            const el = document.getElementById(id); if(el) { el.innerText = '---'; el.style.color = ''; }
         });
         updateCardIcon('current-icon-container', 'circle-dashed', 'rgba(255,255,255,0.03)');
         updateCardIcon('target-icon-container', 'circle-dashed', 'rgba(255,255,255,0.03)');
-        const es = document.getElementById('home-empty-state');
-        if(es) es.classList.remove('hidden');
-        const vc = document.getElementById('home-vector-card');
-        if(vc) vc.classList.add('hidden');
+        const es = document.getElementById('home-empty-state'); if(es) es.classList.remove('hidden');
+        const vc = document.getElementById('home-vector-card'); if(vc) vc.classList.add('hidden');
     }
-    
     initGrid(); 
 }
 
 function initGrid() {
-    const container = document.getElementById('matrix-grid'); 
-    container.innerHTML = '';
+    const container = document.getElementById('matrix-grid'); container.innerHTML = '';
     const fallbackImg = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=300&q=80';
-    
     gridBaseData.forEach(d => {
         const btn = document.createElement('button');
         btn.className = 'matrix-btn bg-surfaceLight rounded-[14px] w-full aspect-square text-left relative overflow-hidden flex flex-col justify-end border-2 border-transparent p-0 group';
         btn.dataset.id = d.id; 
         const imgSrc = currentGender === 'female' ? `images/f${d.imgCode}.png` : `images/${d.imgCode}.png`;
-        
         btn.innerHTML = `
             <div class="absolute inset-0 transition-opacity duration-300 opacity-60 group-hover:opacity-90 z-0" id="icon-wrap-${d.id}">
                 <img src="${imgSrc}" onerror="this.src='${fallbackImg}'" class="w-full h-full object-cover transition-all duration-300">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#1C1C1E] via-[#1C1C1E]/60 to-transparent"></div>
             </div>
             <div class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-white/30 transition-colors duration-300 z-20" id="dot-${d.id}"></div>
             <div class="relative z-10 p-2.5 w-full">
                 <span class="block font-bold text-[13px] text-white mb-0.5 transition-colors duration-300 leading-tight drop-shadow">${d.name}</span>
                 <span class="block text-[9px] text-gray-300 transition-colors duration-300 drop-shadow">${d.desc}</span>
-            </div>
-        `;
-        btn.onclick = () => handleSelect(d, btn); 
-        container.appendChild(btn);
+            </div>`;
+        btn.onclick = () => handleSelect(d, btn); container.appendChild(btn);
     });
 }
 
 function updateCardIcon(containerId, source, color) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
+    const container = document.getElementById(containerId); if (!container) return;
     if (source.endsWith('.png')) {
         const fallbackUrl = 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=300&q=80';
         container.innerHTML = `<img src="${source}" onerror="this.onerror=null; this.src='${fallbackUrl}'" class="w-full h-full object-cover opacity-20 transition-all duration-300 mix-blend-screen" style="filter: grayscale(30%);">`;
@@ -1008,120 +990,65 @@ function updateCardIcon(containerId, source, color) {
     }
 }
 
-function handleSelect(data, btn, isInit = false) {
+function handleSelect(data, btn) {
     const t = themes[currentGender];
     const imgSrc = currentGender === 'female' ? `images/f${data.imgCode}.png` : `images/${data.imgCode}.png`;
     
     if (!currentCell) {
-        currentCell = data; 
-        btn.style.borderColor = t.glow; 
-        btn.querySelector('span.font-bold').style.color = t.glow;
-        document.getElementById(`dot-${data.id}`).style.backgroundColor = t.glow;
-        document.getElementById(`icon-wrap-${data.id}`).style.opacity = '1';
-        
-        document.getElementById('current-display').innerHTML = data.name; 
-        document.getElementById('current-display').style.color = t.glow;
+        currentCell = data; btn.style.borderColor = t.glow; btn.querySelector('span.font-bold').style.color = t.glow;
+        document.getElementById(`dot-${data.id}`).style.backgroundColor = t.glow; document.getElementById(`icon-wrap-${data.id}`).style.opacity = '1';
+        document.getElementById('current-display').innerHTML = data.name; document.getElementById('current-display').style.color = t.glow;
         document.getElementById('reset-btn').classList.remove('hidden'); 
-        
         updateCardIcon('current-icon-container', imgSrc, 'rgba(255,255,255,0.05)');
-        
         document.querySelectorAll('#matrix-grid button').forEach(b => {
             const item = gridBaseData.find(i => i.id === b.dataset.id);
             if (item.id === currentCell.id) return;
-            const dM = item.m - currentCell.m;
-            const dF = item.f - currentCell.f;
-            if (dM < 0 || (dM === 0 && dF > 0)) { 
-                b.disabled = true; 
-                b.style.opacity = '0.3'; 
-                b.style.cursor = 'not-allowed';
-                if(b.querySelector('img')) b.querySelector('img').style.filter = 'grayscale(100%)'; 
-            }
+            const dM = item.m - currentCell.m, dF = item.f - currentCell.f;
+            if (dM < 0 || (dM === 0 && dF > 0)) { b.disabled = true; b.style.opacity = '0.3'; b.style.cursor = 'not-allowed'; if(b.querySelector('img')) b.querySelector('img').style.filter = 'grayscale(100%)'; }
         });
     } else if (!targetCell && !btn.disabled && data.id !== currentCell.id) {
-        targetCell = data; 
-        btn.style.borderColor = t.glow; 
-        btn.style.boxShadow = `inset 0 0 0 2px ${t.glow}`;
-        btn.querySelector('span.font-bold').style.color = '#fff';
-        document.getElementById(`dot-${data.id}`).style.backgroundColor = '#fff';
-        document.getElementById(`icon-wrap-${data.id}`).style.opacity = '1';
-        
-        document.getElementById('target-display').innerHTML = data.name; 
-        document.getElementById('target-display').style.color = t.glow;
-        
+        targetCell = data; btn.style.borderColor = t.glow; btn.style.boxShadow = `inset 0 0 0 2px ${t.glow}`; btn.querySelector('span.font-bold').style.color = '#fff';
+        document.getElementById(`dot-${data.id}`).style.backgroundColor = '#fff'; document.getElementById(`icon-wrap-${data.id}`).style.opacity = '1';
+        document.getElementById('target-display').innerHTML = data.name; document.getElementById('target-display').style.color = t.glow;
         updateCardIcon('target-icon-container', imgSrc, t.glowDim);
-        
-        document.getElementById('matrix-step-1').classList.add('hidden'); 
-        document.getElementById('vector-main-title').innerText = 'Your Protocol';
-        document.getElementById('matrix-arrow').style.color = t.glow; 
-        
-        calculateWithScalars(); 
-        updateHomeSummary();
-        saveUserData();
+        document.getElementById('matrix-step-1').classList.add('hidden'); document.getElementById('vector-main-title').innerText = 'Your Protocol'; document.getElementById('matrix-arrow').style.color = t.glow; 
+        calculateWithScalars(); updateHomeSummary(); saveUserData();
     }
 }
 
 function calculateWithScalars() {
-    const dM = targetCell.m - currentCell.m;
-    const dF = targetCell.f - currentCell.f;
-    const absM = Math.abs(dM);
-    const absF = Math.abs(dF);
-    
-    if (dM < 0 || (dM === 0 && dF > 0)) { 
-        document.getElementById('prescription-section').classList.add('hidden'); 
-        document.getElementById('exception-banner').classList.remove('hidden');
-        return; 
-    }
-    
+    const dM = targetCell.m - currentCell.m, dF = targetCell.f - currentCell.f, absM = Math.abs(dM), absF = Math.abs(dF);
+    if (dM < 0 || (dM === 0 && dF > 0)) { document.getElementById('prescription-section').classList.add('hidden'); document.getElementById('exception-banner').classList.remove('hidden'); return; }
     document.getElementById('exception-banner').classList.add('hidden');
     
-    let rt = 50; 
-    if (dM > 0) rt += (absM * 12); 
-    if (dF < 0) rt -= (absF * 4); 
-    if (dM > 0 && dF >= 0) rt += 10;
-    
-    rt = Math.max(40, Math.min(85, rt)); 
-    let ct = 100 - rt;
-    let z1 = 0, z2 = 0, hiit = 0, metcon = 0;
-    
+    let rt = 50; if (dM > 0) rt += (absM * 12); if (dF < 0) rt -= (absF * 4); if (dM > 0 && dF >= 0) rt += 10;
+    rt = Math.max(40, Math.min(85, rt)); let ct = 100 - rt; let z1 = 0, z2 = 0, hiit = 0, metcon = 0;
     if (dM === 0 && dF === 0) { z2 = 40; metcon = 60; }
     else if (dM > 0 && dF >= 0) { metcon = 20 + (dF === 0 ? 5 : -5); z1 = 100 - metcon; }
     else if (dM > 0 && dF < 0) { z2 = 85; z1 = 15; }
-    else if (dM === 0 && dF < 0) { 
-        if (targetCell.f === 1) { hiit = 15 + (absF * 5); z2 = 100 - hiit; } 
-        else { hiit = 10; z2 = 90; } 
-    }
+    else if (dM === 0 && dF < 0) { if (targetCell.f === 1) { hiit = 15 + (absF * 5); z2 = 100 - hiit; } else { hiit = 10; z2 = 90; } }
     
-    renderCharts({ rt, ct, z1, z2, hiit, metcon });
+    lastChartValues = { rt, ct, z1, z2, hiit, metcon };
+    renderCharts(lastChartValues);
 }
 
 function renderCharts(v) {
     if (typeof Chart === 'undefined') return;
-    
-    const ps = document.getElementById('prescription-section');
-    if (ps) ps.classList.remove('hidden');
-    
+    const ps = document.getElementById('prescription-section'); if (ps) ps.classList.remove('hidden');
     const t = themes[currentGender];
+    const isLightMode = document.documentElement.classList.contains('light-theme');
+    const textColor = isLightMode ? '#000000' : '#FFFFFF';
+    const mutedColor = isLightMode ? '#666666' : '#8E8E93';
     
-    Chart.defaults.font.family = "'Inter', sans-serif"; 
-    Chart.defaults.color = '#8E8E93';
+    Chart.defaults.font.family = "'Inter', sans-serif"; Chart.defaults.color = mutedColor;
 
     const centerPlugin = { 
         id: 'centerText', 
         beforeDraw: (chart) => { 
             if (chart.config.type !== 'doughnut') return; 
-            const ctx = chart.ctx;
-            const centerX = chart.getDatasetMeta(0).data[0].x;
-            const centerY = chart.getDatasetMeta(0).data[0].y; 
-            ctx.save(); 
-            ctx.font = "bold 26px Inter"; 
-            ctx.textBaseline = "middle";
-            ctx.textAlign = "center"; 
-            ctx.fillStyle = "#fff"; 
-            ctx.fillText(v.rt + "%", centerX, centerY - 6); 
-            ctx.font = "600 10px Inter"; 
-            ctx.fillStyle = t.glow;
-            ctx.fillText("Resistance", centerX, centerY + 14); 
-            ctx.restore(); 
+            const ctx = chart.ctx, centerX = chart.getDatasetMeta(0).data[0].x, centerY = chart.getDatasetMeta(0).data[0].y; 
+            ctx.save(); ctx.font = "bold 26px Inter"; ctx.textBaseline = "middle"; ctx.textAlign = "center"; ctx.fillStyle = textColor; ctx.fillText(v.rt + "%", centerX, centerY - 6); 
+            ctx.font = "600 10px Inter"; ctx.fillStyle = t.glow; ctx.fillText("Resistance", centerX, centerY + 14); ctx.restore(); 
         } 
     };
     
@@ -1134,12 +1061,8 @@ function renderCharts(v) {
                 meta.data.forEach((bar, index) => { 
                     const val = dataset.data[index]; 
                     if (val > 0) { 
-                        ctx.fillStyle = '#FFFFFF'; 
-                        ctx.font = 'bold 10px Inter'; 
-                        ctx.textAlign = 'center'; 
-                        ctx.textBaseline = 'bottom';
-                        const offset = chart.canvas.id.includes('home') ? 3 : 5;
-                        ctx.fillText(val + '%', bar.x, bar.y - offset); 
+                        ctx.fillStyle = textColor; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+                        const offset = chart.canvas.id.includes('home') ? 3 : 5; ctx.fillText(val + '%', bar.x, bar.y - offset); 
                     } 
                 }); 
             }); 
@@ -1147,140 +1070,64 @@ function renderCharts(v) {
     };
     
     const draw = (id, type, data, options, plugins = []) => { 
-        const el = document.getElementById(id); 
-        if (!el) return; 
-        const ctx = el.getContext('2d'); 
-        if (window[id+'Obj']) window[id+'Obj'].destroy(); 
+        const el = document.getElementById(id); if (!el) return; 
+        const ctx = el.getContext('2d'); if (window[id+'Obj']) window[id+'Obj'].destroy(); 
         window[id+'Obj'] = new Chart(ctx, { type, data, options, plugins }); 
     };
     
     const macroData = { labels: ['Resistance', 'Cardio'], datasets: [{ data: [v.rt, v.ct], backgroundColor: t.chartMacro, borderWidth: 0, borderRadius: 0 }] };
     const microData = { labels: ['Z1', 'Z2', 'HIIT', 'MET'], datasets: [{ data: [v.z1, v.z2, v.hiit, v.metcon], backgroundColor: t.chartMicro, borderRadius: 4 }] };
     
-
     draw('macroChart', 'doughnut', macroData, { cutout: '82%', plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }, [centerPlugin]);
     draw('microChart', 'bar', microData, { layout: { padding: { top: 20 } }, scales: { y: { display: false, max: 100 }, x: { grid: { display: false }, border: {display: false} } }, plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }, [barPlugin]);
-    
     draw('homeMacroChart', 'doughnut', macroData, { animation: false, cutout: '78%', plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false });
-    draw('homeMicroChart', 'bar', microData, { animation: false, layout: { padding: { top: 15 } }, scales: { y: { display: false, max: 100 }, x: { grid: { display: false }, border: {display: false}, ticks: { font: { size: 9 }, color: '#8E8E93' } } }, plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }, [barPlugin]);
+    draw('homeMicroChart', 'bar', microData, { animation: false, layout: { padding: { top: 15 } }, scales: { y: { display: false, max: 100 }, x: { grid: { display: false }, border: {display: false}, ticks: { font: { size: 9 }, color: mutedColor } } }, plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }, [barPlugin]);
     
     const renderLegend = (id, labels, colors, values) => { 
         const el = document.getElementById(id); 
-        if (el) {
-            el.innerHTML = labels.map((l, i) => `
-                <div class="flex items-center gap-1.5">
-                    <div class="w-2 h-2 rounded-sm" style="background-color:${colors[i]}"></div>
-                    <span>${l} <strong class="text-white ml-0.5">${values[i]}%</strong></span>
-                </div>
-            `).join('');
-        }
+        if (el) el.innerHTML = labels.map((l, i) => `<div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-sm" style="background-color:${colors[i]}"></div><span class="text-textMuted">${l} <strong class="text-white ml-0.5" style="color:${textColor}">${values[i]}%</strong></span></div>`).join('');
     };
-    
-    renderLegend('macro-legend', ['Resistance', 'Cardio'], t.chartMacro, [v.rt, v.ct]);
-    renderLegend('home-macro-legend', ['Resist', 'Cardio'], t.chartMacro, [v.rt, v.ct]);
+    renderLegend('macro-legend', ['Resistance', 'Cardio'], t.chartMacro, [v.rt, v.ct]); renderLegend('home-macro-legend', ['Resist', 'Cardio'], t.chartMacro, [v.rt, v.ct]);
 
     const eg = document.getElementById('energy-guide');
     if (eg) {
-        eg.innerHTML = `
-            <h3 class="font-semibold text-base mb-5">Energy Systems Guide</h3>
-            <div class="space-y-5">
-            ${[
-                {l:'Z1: Active Recovery', c:'#5ED67A', i:'leaf', d:'Very light effort to promote blood flow and recovery.', e:'Slow Walk, Yoga, Mobility'},
-                {l:'Z2: Fat Oxidation', c:'#47A1FF', i:'bike', d:'Moderate effort, conversational pace to build aerobic base.', e:'Steady Cycling, Incline Walk'},
-                {l:'HIIT: Anaerobic Intervals', c:'#FF5C77', i:'zap', d:'Maximum effort bursts followed by rest for anaerobic capacity.', e:'Sprints, Assault Bike, Jump Rope'},
-                {l:'MET: Metabolic Resistance', c:'#FFB340', i:'flame', d:'High heart rate resistance training to build muscle and burn fat.', e:'Kettlebell Circuits, CrossFit'}
-            ].map(s=>`
-                <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:${s.c}15; color:${s.c}">
-                        <i data-lucide="${s.i}" class="w-4 h-4"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold" style="color:${s.c}">${s.l}</h4>
-                        <p class="text-xs text-textMuted mt-0.5">${s.d}</p>
-                        <p class="text-[10px] font-semibold text-white/40 mt-1.5 uppercase tracking-wide">Exercises: ${s.e}</p>
-                    </div>
-                </div>
-            `).join('')}
-            </div>
-        `;
+        eg.innerHTML = `<h3 class="font-semibold text-base mb-5 text-white">Energy Systems Guide</h3><div class="space-y-5">${[
+            {l:'Z1: Active Recovery', c:'#5ED67A', i:'leaf', d:'Very light effort to promote blood flow and recovery.', e:'Slow Walk, Yoga, Mobility'},
+            {l:'Z2: Fat Oxidation', c:'#47A1FF', i:'bike', d:'Moderate effort, conversational pace to build aerobic base.', e:'Steady Cycling, Incline Walk'},
+            {l:'HIIT: Anaerobic Intervals', c:'#FF5C77', i:'zap', d:'Maximum effort bursts followed by rest for anaerobic capacity.', e:'Sprints, Assault Bike, Jump Rope'},
+            {l:'MET: Metabolic Resistance', c:'#FFB340', i:'flame', d:'High heart rate resistance training to build muscle and burn fat.', e:'Kettlebell Circuits, CrossFit'}
+        ].map(s=>`<div class="flex items-start gap-3"><div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:${s.c}15; color:${s.c}"><i data-lucide="${s.i}" class="w-4 h-4"></i></div><div><h4 class="text-sm font-bold" style="color:${s.c}">${s.l}</h4><p class="text-xs text-textMuted mt-0.5">${s.d}</p><p class="text-[10px] font-semibold text-textMuted mt-1.5 uppercase tracking-wide">Exercises: ${s.e}</p></div></div>`).join('')}</div>`;
         refreshIcons({ root: eg });
     }
-    
     renderCourses(v);
 }
 
 function renderCourses(v) {
-    const grid = document.getElementById('course-grid'); 
-    if (!grid) return; 
-
+    const grid = document.getElementById('course-grid'); if (!grid) return; 
     grid.innerHTML = '';
-    
-    const resistMins = Math.round((TOTAL_TARGET_MINUTES * (v.rt / 100)) / 5) * 5;
-    const cardioMins = TOTAL_TARGET_MINUTES - resistMins;
-
+    const resistMins = Math.round((TOTAL_TARGET_MINUTES * (v.rt / 100)) / 5) * 5, cardioMins = TOTAL_TARGET_MINUTES - resistMins;
     const cardioPlan = [{ k: 'METCON', m: v.metcon }, { k: 'Z2', m: v.z2 }, { k: 'HIIT', m: v.hiit }, { k: 'Z1', m: v.z1 }];
-    let remCardio = cardioMins; 
-    const activeCardio = cardioPlan.filter(i => i.m > 0).sort((a,b) => b.m - a.m);
-    
-    const finalPlanMap = new Map();
-    finalPlanMap.set('RESISTANCE', resistMins);
-    
-    activeCardio.forEach((item, i) => {
-        let mins = 0;
-        if (i === activeCardio.length - 1) {
-            mins = remCardio; 
-        } else {
-            mins = Math.round((cardioMins * (item.m / 100)) / 5) * 5;
-            remCardio -= mins;
-        }
-        if (mins > 0) {
-            finalPlanMap.set(item.k, mins);
-        }
-    });
-
-    if (!finalPlanMap.has('Z1')) {
-        finalPlanMap.set('Z1', 0);
-    }
-
-    const finalPlan = Array.from(finalPlanMap.entries()).map(([k, mins]) => ({k, mins}));
-    
-    window.currentFinalPlan = finalPlan;
-    updateRecommendedCards();
-
-    generateSchedule(); 
-    updateHomeSelectedCourses();
-    refreshIcons();
+    let remCardio = cardioMins; const activeCardio = cardioPlan.filter(i => i.m > 0).sort((a,b) => b.m - a.m);
+    const finalPlanMap = new Map(); finalPlanMap.set('RESISTANCE', resistMins);
+    activeCardio.forEach((item, i) => { let mins = (i === activeCardio.length - 1) ? remCardio : Math.round((cardioMins * (item.m / 100)) / 5) * 5; remCardio -= mins; if (mins > 0) finalPlanMap.set(item.k, mins); });
+    if (!finalPlanMap.has('Z1')) finalPlanMap.set('Z1', 0);
+    window.currentFinalPlan = Array.from(finalPlanMap.entries()).map(([k, mins]) => ({k, mins}));
+    updateRecommendedCards(); generateSchedule(); updateHomeSelectedCourses(); refreshIcons();
 }
 
 function updateRecommendedCards() {
-    const grid = document.getElementById('course-grid'); 
-    if (!grid || !window.currentFinalPlan) return; 
-
+    const grid = document.getElementById('course-grid'); if (!grid || !window.currentFinalPlan) return; 
     grid.innerHTML = '';
-    
-    let totalLogged = 0;
-    for (let key in globalCategoryLogged) {
-        totalLogged += globalCategoryLogged[key];
-    }
+    let totalLogged = 0; for (let key in globalCategoryLogged) totalLogged += globalCategoryLogged[key];
     const remainingTotalMins = Math.max(0, TOTAL_TARGET_MINUTES - totalLogged);
-    const totalTimeEl = document.getElementById('home-total-time');
-    if (totalTimeEl) {
-        totalTimeEl.innerText = `${remainingTotalMins} min`;
-    }
+    const totalTimeEl = document.getElementById('home-total-time'); if (totalTimeEl) totalTimeEl.innerText = `${remainingTotalMins} min`;
     
     window.currentFinalPlan.forEach((item) => {
-        const c = courseDatabase[item.k];
-        const targetMins = item.mins;
-        const loggedMins = globalCategoryLogged[item.k] || 0;
-        
-        const isDone = targetMins > 0 ? (loggedMins >= targetMins) : (loggedMins > 0);
-        const remainingMins = Math.max(0, targetMins - loggedMins);
-
-        const mainNumber = targetMins > 0 ? remainingMins : loggedMins;
-        const subText = targetMins > 0 ? (isDone ? 'DONE' : 'min left') : 'min done';
-
+        const c = courseDatabase[item.k], targetMins = item.mins, loggedMins = globalCategoryLogged[item.k] || 0;
+        const isDone = targetMins > 0 ? (loggedMins >= targetMins) : (loggedMins > 0), remainingMins = Math.max(0, targetMins - loggedMins);
+        const mainNumber = targetMins > 0 ? remainingMins : loggedMins, subText = targetMins > 0 ? (isDone ? 'DONE' : 'min left') : 'min done';
         const card = document.createElement('div'); 
-        card.className = 'snap-center premium-card-light w-[130px] min-w-[130px] p-4 flex flex-col justify-between aspect-[3/4] shrink-0 relative overflow-hidden group transition-all duration-500';
+        card.className = 'snap-center premium-card-light w-[145px] min-w-[145px] min-h-[190px] h-auto p-4 flex flex-col justify-between shrink-0 relative overflow-hidden group transition-all duration-500 border border-white/5';
         card.innerHTML = `
             <div class="absolute inset-0 z-0">
                 <img src="${c.image}" class="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-300">
@@ -1294,178 +1141,62 @@ function updateRecommendedCards() {
                 <p class="text-[9px] font-bold text-gray-300 uppercase">${c.type}</p>
                 <p class="text-xs font-bold text-white leading-tight mt-0.5 drop-shadow-md">${c.categoryTitle}</p>
             </div>
-            <p class="text-lg font-bold relative z-10 drop-shadow-lg transition-colors" style="color:${isDone ? '#5ED67A' : c.color}">
-                ${mainNumber}
-                <span class="text-[8px] text-gray-300 ml-1 uppercase">${subText}</span>
-            </p>
-        `;
+            <p class="text-lg font-bold relative z-10 drop-shadow-lg transition-colors mt-4" style="color:${isDone ? '#5ED67A' : c.color}">
+                ${mainNumber} <span class="text-[8px] text-gray-300 ml-1 uppercase">${subText}</span>
+            </p>`;
         grid.appendChild(card);
     });
-    
     refreshIcons({ root: grid });
 }
 
 function generateSchedule() {
     weekMap.forEach(d => { weeklySchedulePlan[d] = { Morning: null, Afternoon: null, Evening: null }; });
-    
-    const morning = [
-        {t:'Z2', s:'Steady Cycling'}, {t:'Z2', s:'Incline Walk'}, {t:'Z2', s:'Low-Intensity Anaerobic'}
-    ];
-    
-    const afternoon = [
-        {t:'HIIT', s:'Running Intervals'}, {t:'HIIT', s:'Cycling Intervals'}, {t:'HIIT', s:'Plyometrics'}
-    ];
-    
-    const workDays = ['MON', 'TUE', 'THU', 'FRI', 'SAT', 'SUN'];
-    
-    workDays.forEach((d, i) => {
+    const morning = [{t:'Z2', s:'Steady Cycling'}, {t:'Z2', s:'Incline Walk'}, {t:'Z2', s:'Low-Intensity Anaerobic'}];
+    const afternoon = [{t:'HIIT', s:'Running Intervals'}, {t:'HIIT', s:'Cycling Intervals'}, {t:'HIIT', s:'Plyometrics'}];
+    ['MON', 'TUE', 'THU', 'FRI', 'SAT', 'SUN'].forEach((d, i) => {
         weeklySchedulePlan[d]['Morning'] = { type: morning[i%3].t, title: morning[i%3].s, time: '09:00 - 10:00' };
         weeklySchedulePlan[d]['Afternoon'] = { type: afternoon[i%3].t, title: afternoon[i%3].s, time: '15:00 - 16:00' };
         weeklySchedulePlan[d]['Evening'] = { type: 'METCON', title: 'Kettlebell', time: '20:00 - 21:00' };
     });
-    
     renderCalendar();
 }
 
 function renderCalendar() {
-    const grid = document.getElementById('visual-calendar-grid'); 
-    if (!grid) return;
-    grid.innerHTML = '';
-    
+    const grid = document.getElementById('visual-calendar-grid'); if (!grid) return; grid.innerHTML = '';
     calendarDaysInfo.forEach((day, index) => {
-        const isSel = index === selectedDayIndex;
-        const div = document.createElement('div');
-        div.className = `flex flex-col items-center justify-center p-2 rounded-[14px] w-10 transition-all cursor-pointer ${isSel ? 'bg-white text-black' : 'text-textMuted hover:bg-surfaceLight/50 active:bg-surfaceLight'}`;
-        div.innerHTML = `
-            <span class="text-[10px] font-medium mb-1 ${isSel ? 'text-black/60' : 'text-textMuted'}">${day.dayName.charAt(0)}</span>
-            <span class="text-sm font-bold">${day.date}</span>
-        `;
-        div.onclick = () => { 
-            selectedDayIndex = index; 
-            renderCalendar(); 
-            updateTimeline(index); 
-        }; 
-        grid.appendChild(div);
+        const isSel = index === selectedDayIndex, div = document.createElement('div');
+        div.className = `flex flex-col items-center justify-center p-2 rounded-[14px] w-10 transition-all cursor-pointer ${isSel ? 'cal-selected' : 'text-textMuted hover:bg-surfaceLight/50 active:bg-surfaceLight'}`;
+        div.innerHTML = `<span class="text-[10px] font-medium mb-1 ${isSel ? '' : 'text-textMuted'}">${day.dayName.charAt(0)}</span><span class="text-sm font-bold">${day.date}</span>`;
+        div.onclick = () => { selectedDayIndex = index; renderCalendar(); updateTimeline(index); }; grid.appendChild(div);
     });
-    
     updateTimeline(selectedDayIndex);
 }
 
 function toggleScheduledCourse(date, title, time, type, color, icon) {
     const idx = selectedCourses.findIndex(c => c.date.toString() === date.toString() && c.title === title && c.time === time);
-    if (idx >= 0) selectedCourses.splice(idx, 1);
-    else selectedCourses.push({ date, title, time, type, color, icon });
-    
-    selectedCourses.sort((a, b) => {
-        if (a.date.toString() !== b.date.toString()) return parseInt(a.date) - parseInt(b.date);
-        return a.time.localeCompare(b.time);
-    });
-    
-    updateTimeline(selectedDayIndex); 
-    updateHomeSelectedCourses();
-    saveUserData();
+    if (idx >= 0) selectedCourses.splice(idx, 1); else selectedCourses.push({ date, title, time, type, color, icon });
+    selectedCourses.sort((a, b) => a.date.toString() !== b.date.toString() ? parseInt(a.date) - parseInt(b.date) : a.time.localeCompare(b.time));
+    updateTimeline(selectedDayIndex); updateHomeSelectedCourses(); saveUserData();
 }
 
 function updateHomeSelectedCourses() {
     const card = document.getElementById('home-course-card'), list = document.getElementById('home-selected-courses-list');
-    if (!card || !list) return;
-    
-    if (!targetCell) { 
-        card.classList.add('hidden'); 
-        return; 
-    }
-    
+    if (!card || !list) return; if (!targetCell) { card.classList.add('hidden'); return; }
     card.classList.remove('hidden');
-    
-    let html = '';
-    const resColor = '#C974F4';
-
-    html += `
-        <div class="flex items-center gap-3 bg-black/20 p-3 rounded-2xl border border-white/5 mb-3 relative overflow-hidden group">
-            <div class="absolute inset-0 opacity-20" style="background: linear-gradient(90deg, ${resColor}, transparent);"></div>
-            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 relative z-10" style="background:${resColor}15">
-                <i data-lucide="dumbbell" class="w-5 h-5" style="color:${resColor}"></i>
-            </div>
-            <div class="flex-1 min-w-0 relative z-10">
-                <div class="flex items-center gap-2 mb-0.5">
-                    <span class="text-[8px] font-bold px-1.5 py-0.5 rounded text-black uppercase tracking-wider" style="background-color:${resColor}">Permanent</span>
-                    <h3 class="font-bold text-xs text-white truncate">Resistance Training</h3>
-                </div>
-                <p class="text-[10px] text-textMuted mt-0.5">Free Weights • Anytime</p>
-            </div>
-            <button onclick="startWorkoutTimer('RESISTANCE', 'Resistance Training', '${resColor}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0 active:scale-95 transition-all hover:bg-white/20 relative z-10">
-                <i data-lucide="play" class="w-3.5 h-3.5 text-white ml-0.5"></i>
-            </button>
-        </div>
-    `;
-
-    if (selectedCourses.length > 0) {
-        html += `<div class="w-full h-px bg-white/10 my-4"></div>`;
-    }
-
-    html += selectedCourses.map(c => `
-        <div class="flex items-center gap-3 mb-3 last:mb-0">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background:${c.color}15">
-                <i data-lucide="${c.icon}" class="w-5 h-5" style="color:${c.color}"></i>
-            </div>
-            <div class="flex-1 min-w-0">
-                <h3 class="font-bold text-xs text-white truncate">${c.title}</h3>
-                <p class="text-[10px] text-textMuted mt-0.5">${calendarDaysInfo[0].month} ${c.date} • ${c.time}</p>
-            </div>
-            <button onclick="startWorkoutTimer('${c.type}', '${c.title}', '${c.color}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0 active:scale-95 transition-all hover:bg-white/20">
-                <i data-lucide="play" class="w-3.5 h-3.5 text-white ml-0.5"></i>
-            </button>
-        </div>
-    `).join('');
-
-    list.innerHTML = html;
-    refreshIcons({ root: card });
+    let html = `<div class="flex items-center gap-3 bg-black/20 p-3 rounded-2xl border border-white/5 mb-3 relative overflow-hidden group"><div class="absolute inset-0 opacity-20" style="background: linear-gradient(90deg, #C974F4, transparent);"></div><div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 relative z-10" style="background:#C974F415"><i data-lucide="dumbbell" class="w-5 h-5 text-[#C974F4]"></i></div><div class="flex-1 min-w-0 relative z-10"><div class="flex items-center gap-2 mb-0.5"><span class="text-[8px] font-bold px-1.5 py-0.5 rounded text-black uppercase tracking-wider bg-[#C974F4]">Permanent</span><h3 class="font-bold text-xs text-white truncate">Resistance Training</h3></div><p class="text-[10px] text-textMuted mt-0.5">Free Weights • Anytime</p></div><button onclick="startWorkoutTimer('RESISTANCE', 'Resistance Training', '#C974F4')" class="w-8 h-8 rounded-full play-btn flex items-center justify-center shrink-0 active:scale-95 transition-all relative z-10"><i data-lucide="play" class="w-3.5 h-3.5 text-white ml-0.5"></i></button></div>`;
+    if (selectedCourses.length > 0) html += `<div class="w-full h-px bg-white/10 my-4"></div>`;
+    html += selectedCourses.map(c => `<div class="flex items-center gap-3 mb-3 last:mb-0"><div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background:${c.color}15"><i data-lucide="${c.icon}" class="w-5 h-5" style="color:${c.color}"></i></div><div class="flex-1 min-w-0"><h3 class="font-bold text-xs text-white truncate">${c.title}</h3><p class="text-[10px] text-textMuted mt-0.5">${calendarDaysInfo[0].month} ${c.date} • ${c.time}</p></div><button onclick="startWorkoutTimer('${c.type}', '${c.title}', '${c.color}')" class="w-8 h-8 rounded-full play-btn flex items-center justify-center shrink-0 active:scale-95 transition-all relative z-10"><i data-lucide="play" class="w-3.5 h-3.5 text-white ml-0.5"></i></button></div>`).join('');
+    list.innerHTML = html; refreshIcons({ root: card });
 }
 
 function updateTimeline(idx) {
     const day = calendarDaysInfo[idx], schedule = weeklySchedulePlan[day.dayName], panel = document.getElementById('daily-schedule-panel');
-    if (!panel) return;
-    let html = '', has = false;
+    if (!panel) return; let html = '', has = false;
     ['Morning', 'Afternoon', 'Evening'].forEach(s => {
         const ses = schedule[s]; 
         if (ses) {
-            has = true; 
-            const c = courseDatabase[ses.type];
-            const isSel = selectedCourses.some(sc => sc.title === ses.title && sc.date.toString() === day.date.toString() && sc.time === ses.time);
-            const isPast = isToday(day.date) && isTimePassed(day.date, ses.time.split(' - ')[0]);
-            const [startTime] = ses.time.split(' - ');
-            
-            html += `
-            <div class="relative flex items-start pl-5 pb-6 border-l-2 ${isSel ? '' : 'border-surfaceLight'}" style="${isSel ? `border-color:${c.color}` : ''}">
-                <div class="absolute left-[-7px] top-1 w-3 h-3 rounded-full border-2 ${isSel ? 'border-white' : 'border-black'}" style="background-color:${c.color}"></div>
-                
-                <div class="w-full">
-                    <p class="text-[10px] font-bold mb-2 ${isSel ? 'text-white' : 'text-textMuted'}">${ses.time}</p>
-                    
-                    <div class="premium-card-light p-4 border transition-all duration-300 flex justify-between items-center gap-2 relative overflow-hidden" style="${isSel ? `border-color: ${c.color};` : 'border-color: rgba(255,255,255,0.05);'}">
-                        
-                        <div class="absolute inset-0 z-0">
-                            <img src="${c.image}" class="w-full h-full object-cover transition-opacity duration-300 ${isSel ? 'opacity-40' : 'opacity-20'}">
-                            <div class="absolute inset-0 bg-gradient-to-r from-[#1C1C1E] via-[#1C1C1E]/80 to-[#1C1C1E]/20"></div>
-                            ${isSel ? `<div class="absolute inset-0 mix-blend-overlay opacity-40" style="background-color: ${c.color}"></div>` : ''}
-                        </div>
-
-                        <div class="flex-1 min-w-0 relative z-10">
-                            <div class="flex items-center gap-1.5 mb-1">
-                                <i data-lucide="${c.icon}" class="w-4 h-4 drop-shadow" style="color:${c.color}"></i>
-                                <p class="text-[10px] font-bold uppercase tracking-wide" style="color:${c.color}">${ses.type}</p>
-                            </div>
-                            <p class="text-sm font-semibold text-white truncate drop-shadow-md">${ses.title}</p>
-                        </div>
-
-                        <button onclick="${isPast ? '' : `toggleScheduledCourse('${day.date}', '${ses.title}', '${ses.time}', '${ses.type}', '${c.color}', '${c.icon}')`}" 
-                            class="px-4 py-2 rounded-full text-[11px] font-bold transition-all shrink-0 relative z-10 ${isPast ? 'bg-surfaceLight/30 text-textMuted/30 cursor-not-allowed' : (isSel ? 'shadow-sm border' : 'bg-black/50 text-gray-300 border border-white/5 hover:text-white backdrop-blur-md')}" 
-                            style="${isSel ? `background-color: ${c.color}33; color: ${c.color}; border-color: ${c.color}4D;` : ''}">
-                            ${isPast ? 'Past' : (isSel ? 'Booked' : 'Book')}
-                        </button>
-                    </div>
-                </div>
-            </div>`;
+            has = true; const c = courseDatabase[ses.type], isSel = selectedCourses.some(sc => sc.title === ses.title && sc.date.toString() === day.date.toString() && sc.time === ses.time), isPast = isToday(day.date) && isTimePassed(day.date, ses.time.split(' - ')[0]);
+            html += `<div class="relative flex items-start pl-5 pb-6 border-l-2 ${isSel ? '' : 'border-surfaceLight'}" style="${isSel ? `border-color:${c.color}` : ''}"><div class="absolute left-[-7px] top-1 w-3 h-3 rounded-full border-2 ${isSel ? 'border-white' : 'border-black'}" style="background-color:${c.color}"></div><div class="w-full"><p class="text-[10px] font-bold mb-2 ${isSel ? 'text-white' : 'text-textMuted'}">${ses.time}</p><div class="premium-card-light p-4 border transition-all duration-300 flex justify-between items-center gap-2 relative overflow-hidden" style="${isSel ? `border-color: ${c.color};` : 'border-color: rgba(0,0,0,0.05);'}"><div class="absolute inset-0 z-0"><img src="${c.image}" class="w-full h-full object-cover transition-opacity duration-300 ${isSel ? 'opacity-40' : 'opacity-20'}"><div class="absolute inset-0 bg-gradient-to-r from-[#1C1C1E] via-[#1C1C1E]/80 to-[#1C1C1E]/20"></div>${isSel ? `<div class="absolute inset-0 mix-blend-overlay opacity-40" style="background-color: ${c.color}"></div>` : ''}</div><div class="flex-1 min-w-0 relative z-10"><div class="flex items-center gap-1.5 mb-1"><i data-lucide="${c.icon}" class="w-4 h-4 drop-shadow" style="color:${c.color}"></i><p class="text-[10px] font-bold uppercase tracking-wide" style="color:${c.color}">${ses.type}</p></div><p class="text-sm font-semibold text-white truncate drop-shadow-md">${ses.title}</p></div><button onclick="${isPast ? '' : `toggleScheduledCourse('${day.date}', '${ses.title}', '${ses.time}', '${ses.type}', '${c.color}', '${c.icon}')`}" class="px-4 py-2 rounded-full text-[11px] font-bold transition-all shrink-0 relative z-10 ${isPast ? 'bg-surfaceLight/30 text-textMuted/30 cursor-not-allowed' : (isSel ? 'shadow-sm border' : 'timeline-book-btn backdrop-blur-md')}" style="${isSel ? `background-color: ${c.color}33; color: ${c.color}; border-color: ${c.color}4D;` : ''}">${isPast ? 'Past' : (isSel ? 'Booked' : 'Book')}</button></div></div></div>`;
         }
     });
     panel.innerHTML = has ? html : `<div class="flex flex-col items-center justify-center py-10 opacity-50"><i data-lucide="coffee" class="w-8 h-8 mb-2"></i><p class="text-[10px] font-bold text-textMuted uppercase">Rest Day</p></div>`;
@@ -1474,412 +1205,184 @@ function updateTimeline(idx) {
 
 function updateHomeSummary() {
     if (!currentCell || !targetCell) return;
-    
-    const es = document.getElementById('home-empty-state');
-    const vc = document.getElementById('home-vector-card');
-    const vp = document.getElementById('home-vector-path');
-    const watermark = document.getElementById('home-watermark-target');
-    
-    if (es) es.classList.add('hidden');
-    if (vc) vc.classList.remove('hidden');
-    if (vp) vp.innerText = `${currentCell.name}  →  ${targetCell.name}`;
-    
+    const es = document.getElementById('home-empty-state'), vc = document.getElementById('home-vector-card'), vp = document.getElementById('home-vector-path'), watermark = document.getElementById('home-watermark-target');
+    if (es) es.classList.add('hidden'); if (vc) vc.classList.remove('hidden'); if (vp) vp.innerText = `${currentCell.name}  →  ${targetCell.name}`;
     if (watermark) watermark.style.color = themes[currentGender].glow;
-    
     const tag = document.getElementById('home-gender-tag');
-    if (tag) { 
-        tag.innerText = currentGender; 
-        tag.style.color = themes[currentGender].glow; 
-        tag.style.background = themes[currentGender].glowDim; 
-    }
+    if (tag) { tag.innerText = currentGender; tag.style.color = themes[currentGender].glow; tag.style.background = themes[currentGender].glowDim; }
 }
 
 document.getElementById('reset-btn').onclick = () => {
-    currentCell = targetCell = null; 
-    selectedCourses = [];
-    globalCategoryLogged = { 'RESISTANCE': 0, 'METCON': 0, 'Z2': 0, 'HIIT': 0, 'Z1': 0 };
-    localStorage.removeItem('gym_currentCell');
-    localStorage.removeItem('gym_targetCell');
-    localStorage.removeItem('gym_selectedCourses');
-    localStorage.removeItem('gym_globalCategoryLogged');
+    currentCell = targetCell = null; selectedCourses = []; globalCategoryLogged = { 'RESISTANCE': 0, 'METCON': 0, 'Z2': 0, 'HIIT': 0, 'Z1': 0 };
+    localStorage.removeItem('gym_currentCell'); localStorage.removeItem('gym_targetCell'); localStorage.removeItem('gym_selectedCourses'); localStorage.removeItem('gym_globalCategoryLogged');
     initGrid();
-    
-    ['current-display', 'target-display'].forEach(id => { 
-        const el = document.getElementById(id);
-        if(el) { el.innerText = '---'; el.style.color = ''; }
-    });
-    
-    ['exception-banner', 'prescription-section', 'reset-btn', 'home-vector-card'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.classList.add('hidden');
-    });
-    
-    const es = document.getElementById('home-empty-state');
-    if(es) es.classList.remove('hidden');
-    
-    updateCardIcon('current-icon-container', 'circle-dashed', 'rgba(255,255,255,0.03)');
-    updateCardIcon('target-icon-container', 'circle-dashed', 'rgba(255,255,255,0.03)');
-    
-    const hc = document.getElementById('home-course-card');
-    if(hc) hc.classList.add('hidden');
-    
-    const ms1 = document.getElementById('matrix-step-1');
-    if(ms1) ms1.classList.remove('hidden');
-    
-    const vt = document.getElementById('vector-main-title');
-    if(vt) vt.innerText = 'Calibration';
-    
-    const ma = document.getElementById('matrix-arrow');
-    if(ma) ma.style.color = '';
-    
-    window.currentFinalPlan = null;
-    updateHomeBooking();
+    ['current-display', 'target-display'].forEach(id => { const el = document.getElementById(id); if(el) { el.innerText = '---'; el.style.color = ''; } });
+    ['exception-banner', 'prescription-section', 'reset-btn', 'home-vector-card', 'home-course-card'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
+    const es = document.getElementById('home-empty-state'); if(es) es.classList.remove('hidden');
+    updateCardIcon('current-icon-container', 'circle-dashed', 'rgba(255,255,255,0.03)'); updateCardIcon('target-icon-container', 'circle-dashed', 'rgba(255,255,255,0.03)');
+    const ms1 = document.getElementById('matrix-step-1'); if(ms1) ms1.classList.remove('hidden');
+    const vt = document.getElementById('vector-main-title'); if(vt) vt.innerText = 'Calibration';
+    const ma = document.getElementById('matrix-arrow'); if(ma) ma.style.color = '';
+    window.currentFinalPlan = null; updateHomeBooking();
 };
 
 const coachesData = [
-    { id: 'c1', name: 'Wei Li', avatar: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80', desc: 'Focuses on practical strength for daily life. Great for beginners looking to build a sustainable routine without intimidating equipment.', tags: ['Strength', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
-    { id: 'c2', name: 'Siyu Chen', avatar: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=150&q=80', desc: 'Helps you fix your posture and lose fat effectively. She provides easy-to-follow cardio plans you can do right in your living room.', tags: ['Fat Loss', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
-    { id: 'c3', name: 'Hao Wang', avatar: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=150&q=80', desc: 'Friendly mobility coach who helps you recover from sitting at a desk all day. Focuses on stretching and moving pain-free.', tags: ['Recovery', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
-    { id: 'c4', name: 'Jian Zhao', avatar: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=150&q=80', desc: 'Passionate about body FITGRIDsition. He breaks down complex exercises into simple steps to help you tone up safely.', tags: ['Hypertrophy', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
-    { id: 'c5', name: 'Min Zhang', avatar: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=150&q=80', desc: 'Energetic HIIT instructor who keeps you motivated. Expect sweaty, fun sessions that get your heart rate up quickly.', tags: ['HIIT', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
+    { id: 'c1', name: 'Wei Li', avatar: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80', desc: 'Focuses on practical strength for daily life.', tags: ['Strength', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
+    { id: 'c2', name: 'Siyu Chen', avatar: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=150&q=80', desc: 'Helps you fix your posture and lose fat effectively.', tags: ['Fat Loss', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
+    { id: 'c3', name: 'Hao Wang', avatar: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=150&q=80', desc: 'Friendly mobility coach who helps you recover.', tags: ['Recovery', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
+    { id: 'c4', name: 'Jian Zhao', avatar: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=150&q=80', desc: 'Passionate about body FITGRIDsition. Simple steps.', tags: ['Hypertrophy', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
+    { id: 'c5', name: 'Min Zhang', avatar: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=150&q=80', desc: 'Energetic HIIT instructor who keeps you motivated.', tags: ['HIIT', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
     { id: 'c6', name: 'Yue Lin', avatar: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=150&q=80', desc: 'Gentle yoga and core instructor.', tags: ['Yoga', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] }
 ];
 
 function generateCoachSchedules() {
-    const now = new Date();
-    
-    const times = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
-    const schedules = {};
-    
-    const coachPatterns = {
-        'c1': { days: ['MON', 'TUE', 'THU', 'FRI'], slots: [2, 3, 5] },
-        'c2': { days: ['MON', 'TUE', 'THU', 'SAT'], slots: [4, 5, 6] },
-        'c3': { days: ['TUE', 'WED', 'FRI', 'SUN'], slots: [1, 4, 5] },
-        'c4': { days: ['MON', 'WED', 'THU', 'SAT'], slots: [0, 1, 7, 8] },
-        'c5': { days: ['TUE', 'THU', 'FRI', 'SUN'], slots: [5, 6, 7] },
-        'c6': { days: ['MON', 'WED', 'SAT', 'SUN'], slots: [0, 4, 9] }
-    };
-    
+    const now = new Date(), times = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'], schedules = {};
+    const coachPatterns = { 'c1': { days: ['MON', 'TUE', 'THU', 'FRI'], slots: [2, 3, 5] }, 'c2': { days: ['MON', 'TUE', 'THU', 'SAT'], slots: [4, 5, 6] }, 'c3': { days: ['TUE', 'WED', 'FRI', 'SUN'], slots: [1, 4, 5] }, 'c4': { days: ['MON', 'WED', 'THU', 'SAT'], slots: [0, 1, 7, 8] }, 'c5': { days: ['TUE', 'THU', 'FRI', 'SUN'], slots: [5, 6, 7] }, 'c6': { days: ['MON', 'WED', 'SAT', 'SUN'], slots: [0, 4, 9] } };
     Object.keys(coachPatterns).forEach(coachId => {
-        const pattern = coachPatterns[coachId];
-        const coachSchedule = {};
-        
+        const pattern = coachPatterns[coachId], coachSchedule = {};
         for (let i = 0; i < 14; i++) {
-            const date = new Date(now);
-            date.setDate(now.getDate() + i);
-            const dayName = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][date.getDay()];
-            const dateStr = date.getDate().toString();
-            
-            if (pattern.days.includes(dayName)) {
-                const daySlots = pattern.slots.map(slotIndex => times[slotIndex]);
-                coachSchedule[dateStr] = daySlots;
-            }
+            const date = new Date(now); date.setDate(now.getDate() + i); const dayName = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][date.getDay()], dateStr = date.getDate().toString();
+            if (pattern.days.includes(dayName)) coachSchedule[dateStr] = pattern.slots.map(s => times[s]);
         }
-        
         schedules[coachId] = coachSchedule;
-    });
-    
-    return schedules;
+    }); return schedules;
 }
+window.coachSchedules = generateCoachSchedules();
 
-const coachSchedules = generateCoachSchedules();
-window.coachSchedules = coachSchedules;
+let currentSelectedCoach = null, currentSelectedDate = null, currentSelectedSlot = null;
 
-let currentSelectedCoach = null;
-let currentSelectedDate = null;
-let currentSelectedSlot = null;
-
-window.handleHomeCoachClick = function() {
-    if (currentBooking && currentBooking.coach) {
-        openCoachDetail(currentBooking.coach);
-    } else {
-        switchView('coach');
-    }
-};
+window.handleHomeCoachClick = function() { if (currentBooking && currentBooking.coach) openCoachDetail(currentBooking.coach); else switchView('coach'); };
 
 window.cancelBooking = async function(event) {
     if (event) event.stopPropagation();
-    if (currentBooking && currentBooking.coach && currentBooking.date && currentBooking.time) {
-        await cancelCoachBooking(currentBooking.coach.id, currentBooking.date, currentBooking.time);
-    }
-    currentBooking = null;
-    saveUserData();
-    updateHomeBooking();
+    if (currentBooking && currentBooking.coach && currentBooking.date && currentBooking.time) await cancelCoachBooking(currentBooking.coach.id, currentBooking.date, currentBooking.time);
+    currentBooking = null; saveUserData(); updateHomeBooking();
     if (document.getElementById('view-coach-detail').classList.contains('view-active')) {
-        if (currentSelectedDate) {
-            const cc = document.getElementById('coach-calendar');
-            const activeBtn = Array.from(cc.children).find(c => c.classList.contains('bg-white'));
-            if (activeBtn) selectCoachDate(currentSelectedDate, activeBtn);
-        }
+        if (currentSelectedDate) { const activeBtn = Array.from(document.getElementById('coach-calendar').children).find(c => c.classList.contains('cal-selected') || c.classList.contains('bg-white') || c.classList.contains('bg-black')); if (activeBtn) selectCoachDate(currentSelectedDate, activeBtn); }
         updateBookButton();
-    }
-    refreshIcons();
+    } refreshIcons();
 };
 
 function updateHomeBooking() {
     const cd = document.getElementById('home-coach-default'), cb = document.getElementById('home-coach-booked'), cp = document.getElementById('home-coach-status-pill'), cardOuter = document.getElementById('home-coach-card-outer'), watermark = document.getElementById('home-coach-watermark'), timeText = document.getElementById('home-coach-time'), avatar = document.getElementById('home-coach-avatar');
-
     if (currentBooking) {
-        const bookingTime = currentBooking.time;
-        const bookingDate = currentBooking.date;
-        const now = new Date();
-        const today = now.getDate();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        
-        const [bookHour, bookMinute] = bookingTime.split(':').map(Number);
-        
-        if (parseInt(bookingDate) < today || 
-            (parseInt(bookingDate) === today && (currentHour > bookHour || (currentHour === bookHour && currentMinute >= bookMinute)))) {
-            cancelBooking(null);
-            currentBooking = null;
-            localStorage.removeItem('gym_currentBooking');
+        const now = new Date(), [bookHour, bookMinute] = currentBooking.time.split(':').map(Number);
+        if (parseInt(currentBooking.date) < now.getDate() || (parseInt(currentBooking.date) === now.getDate() && (now.getHours() > bookHour || (now.getHours() === bookHour && now.getMinutes() >= bookMinute)))) {
+            cancelBooking(null); currentBooking = null; localStorage.removeItem('gym_currentBooking');
         }
     }
-
     if (!currentBooking) {
         if (cd) cd.classList.remove('hidden'); if (cb) cb.classList.add('hidden'); if (cp) cp.classList.add('hidden');
         if (cardOuter) cardOuter.style.background = ''; if (watermark) watermark.style.color = 'rgba(255,255,255,0.05)';
         return;
     }
-    
     if (cd) cd.classList.add('hidden'); if (cb) cb.classList.remove('hidden');
-    
-    const tColor = currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340';
-    const tBg = currentBooking.type === 'At-Home' ? 'rgba(201, 116, 244, 0.12)' : 'rgba(255, 179, 64, 0.12)';
-
-    if (cardOuter) cardOuter.style.background = `linear-gradient(135deg, #1C1C1E 30%, ${tBg} 100%)`;
+    const tColor = currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340', tBg = currentBooking.type === 'At-Home' ? 'rgba(201, 116, 244, 0.12)' : 'rgba(255, 179, 64, 0.12)';
+    if (cardOuter && !document.documentElement.classList.contains('light-theme')) cardOuter.style.background = `linear-gradient(135deg, #1C1C1E 30%, ${tBg} 100%)`;
+    else if (cardOuter) cardOuter.style.background = `linear-gradient(135deg, #FFFFFF 30%, ${tBg} 100%)`;
     if (watermark) watermark.style.color = tColor;
-    
-    if (cp) {
-        cp.classList.remove('hidden');
-        cp.className = `flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-wider transition-colors duration-500`; 
-        cp.style.backgroundColor = `${tColor}20`; cp.style.color = tColor; cp.innerText = currentBooking.type; 
-    }
-    
-    if (avatar) {
-        avatar.onerror = function() { this.onerror=null; this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80'; };
-        avatar.src = currentBooking.coach.avatar; avatar.style.borderColor = tColor;
-    }
-    
-    const name = document.getElementById('home-coach-name');
-    if (name) name.innerText = currentBooking.coach.name.split(' ')[0];
-    
-    if (timeText) {
-        timeText.innerHTML = `${calendarDaysInfo[0].month} ${currentBooking.date} &bull; ${currentBooking.time}`;
-        timeText.style.color = tColor;
-    }
+    if (cp) { cp.classList.remove('hidden'); cp.className = `flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-wider transition-colors duration-500`; cp.style.backgroundColor = `${tColor}20`; cp.style.color = tColor; cp.innerText = currentBooking.type; }
+    if (avatar) { avatar.onerror = function() { this.onerror=null; this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80'; }; avatar.src = currentBooking.coach.avatar; avatar.style.borderColor = tColor; }
+    const name = document.getElementById('home-coach-name'); if (name) name.innerText = currentBooking.coach.name.split(' ')[0];
+    if (timeText) { timeText.innerHTML = `${calendarDaysInfo[0].month} ${currentBooking.date} • ${currentBooking.time}`; timeText.style.color = tColor; }
 }
 
 function renderCoachList() {
-    const container = document.getElementById('view-coach'); 
-    if (!container) return;
-    const dataToUse = window.coachesDataCache && window.coachesDataCache.length > 0 ? window.coachesDataCache : window.coachesData;
-    container.innerHTML = '';
-    const fallbackImg = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80';
-    
+    const container = document.getElementById('view-coach'); if (!container) return;
+    const dataToUse = window.coachesDataCache && window.coachesDataCache.length > 0 ? window.coachesDataCache : window.coachesData; container.innerHTML = '';
     dataToUse.forEach(c => {
-        const card = document.createElement('div'); 
-        card.className = 'premium-card p-4 flex gap-4 items-center cursor-pointer active:scale-[0.98] transition-transform';
+        const isAtHome = c.tags.includes('At-Home'), themeColor = isAtHome ? '#C974F4' : '#FFB340', desc = c.description || c.desc;
+        const card = document.createElement('div'); card.className = 'premium-card p-4 flex gap-4 items-center cursor-pointer active:scale-[0.98] transition-transform border border-white/5';
         card.onclick = () => openCoachDetail(c);
-        
-        const isAtHome = c.tags.includes('At-Home');
-        const themeColor = isAtHome ? '#C974F4' : '#FFB340';
-        const desc = c.description || c.desc;
-        
-        card.innerHTML = `
-            <div class="w-14 h-14 rounded-full shrink-0 relative overflow-hidden border-2" style="border-color:${themeColor}4D">
-                <img src="${c.avatar}" onerror="this.onerror=null; this.src='${fallbackImg}';" class="w-full h-full object-cover">
-                <div class="absolute inset-0 opacity-20" style="background-color:${themeColor}"></div>
-            </div>
-            <div class="flex-1 min-w-0">
-                <h3 class="text-sm font-bold text-white mb-0.5">${c.name}</h3>
-                <p class="text-[10px] text-textMuted line-clamp-1 mb-1.5">${desc}</p>
-                <div class="flex gap-2">
-                    ${c.tags.map((t, i) => `<span class="text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider" style="color:${c.tagColors[i]}; background-color:${c.tagColors[i]}15; border: 1px solid ${c.tagColors[i]}33">${t}</span>`).join('')}
-                </div>
-            </div>
-            <i data-lucide="chevron-right" class="w-4 h-4 shrink-0" style="color:${themeColor}80"></i>
-        `;
+        card.innerHTML = `<div class="w-14 h-14 rounded-full shrink-0 relative overflow-hidden border-2" style="border-color:${themeColor}4D"><img src="${c.avatar}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80';" class="w-full h-full object-cover"><div class="absolute inset-0 opacity-20" style="background-color:${themeColor}"></div></div><div class="flex-1 min-w-0"><h3 class="text-sm font-bold text-white mb-0.5">${c.name}</h3><p class="text-[10px] text-textMuted line-clamp-1 mb-1.5">${desc}</p><div class="flex gap-2">${c.tags.map((t, i) => `<span class="text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider" style="color:${c.tagColors[i]}; background-color:${c.tagColors[i]}15; border: 1px solid ${c.tagColors[i]}33">${t}</span>`).join('')}</div></div><i data-lucide="chevron-right" class="w-4 h-4 shrink-0" style="color:${themeColor}80"></i>`;
         container.appendChild(card);
-    });
-    refreshIcons({ root: container });
+    }); refreshIcons({ root: container });
 }
 
 async function openCoachDetail(coach) {
     currentSelectedCoach = coach; currentSelectedDate = null; currentSelectedSlot = null;
     let scheduleData = window.coachSchedulesCache[coach.id];
-    if (!scheduleData) {
-        scheduleData = await window.fetchCoachSchedule(coach.id);
-        if (scheduleData) window.coachSchedulesCache[coach.id] = scheduleData;
-    }
-
-    const vt = document.getElementById('view-title'); if (vt) vt.innerText = coach.name;
-    switchView('coach-detail');
-
+    if (!scheduleData) { scheduleData = await window.fetchCoachSchedule(coach.id); if (scheduleData) window.coachSchedulesCache[coach.id] = scheduleData; }
+    const vt = document.getElementById('view-title'); if (vt) vt.innerText = coach.name; switchView('coach-detail');
     const hasAtHome = coach.tags.includes('At-Home'), btn = document.getElementById('book-session-btn'), atBtn = document.getElementById('book-athome-btn');
-
-    if (btn) {
-        btn.className = "py-4 rounded-xl font-bold text-sm transition-all duration-300 flex justify-center items-center pointer-events-none bg-surfaceLight text-textMuted";
-        if (hasAtHome) { btn.classList.add('flex-1'); btn.innerText = "Book Gym"; } 
-        else { btn.classList.add('w-full'); btn.innerText = "Select a Time Slot"; }
-    }
-
-    if (atBtn) {
-        atBtn.className = "py-4 rounded-xl font-bold text-sm transition-all duration-300 flex justify-center items-center pointer-events-none bg-surfaceLight text-textMuted hidden";
-        if (hasAtHome) { atBtn.classList.remove('hidden'); atBtn.classList.add('flex-1'); atBtn.innerText = "Book At-Home"; }
-    }
-
-    const themeColor = hasAtHome ? '#C974F4' : '#FFB340', fallbackImg = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80', head = document.getElementById('coach-detail-header');
-
-    if (head) {
-        head.innerHTML = `
-            <i data-lucide="award" class="absolute -top-6 -right-6 w-32 h-32 rotate-12 pointer-events-none opacity-20" style="color:${themeColor}"></i>
-            <div class="w-20 h-20 rounded-full border-4 mb-3 z-10 shadow-lg relative overflow-hidden" style="border-color:${themeColor}4D">
-                <img src="${coach.avatar}" onerror="this.onerror=null; this.src='${fallbackImg}';" class="w-full h-full object-cover">
-                <div class="absolute inset-0 opacity-20" style="background-color:${themeColor}"></div>
-            </div>
-            <p class="text-xs text-textMuted leading-relaxed mb-3 z-10">${coach.description || coach.desc}</p>
-            <div class="flex gap-2 z-10">
-                ${coach.tags.map((t, i) => `<span class="text-[9px] px-2 py-1 rounded-full font-bold uppercase tracking-wider" style="color:${coach.tagColors[i]}; background-color:${coach.tagColors[i]}15; border: 1px solid ${coach.tagColors[i]}33">${t}</span>`).join('')}
-            </div>
-        `;
-    }
-
-    const calGrid = document.getElementById('coach-calendar'); if (!calGrid) return;
-    calGrid.innerHTML = ''; let targetBtnToClick = null;
-
-    const coachScheduleData = scheduleData || (typeof window.coachSchedules !== 'undefined' ? window.coachSchedules[coach.id] : null);
+    if (btn) { btn.className = "py-4 rounded-xl font-bold text-sm transition-all duration-300 flex justify-center items-center pointer-events-none bg-surfaceLight text-textMuted"; if (hasAtHome) { btn.classList.add('flex-1'); btn.innerText = "Book Gym"; } else { btn.classList.add('w-full'); btn.innerText = "Select a Time Slot"; } }
+    if (atBtn) { atBtn.className = "py-4 rounded-xl font-bold text-sm transition-all duration-300 flex justify-center items-center pointer-events-none bg-surfaceLight text-textMuted hidden"; if (hasAtHome) { atBtn.classList.remove('hidden'); atBtn.classList.add('flex-1'); atBtn.innerText = "Book At-Home"; } }
     
+    const themeColor = hasAtHome ? '#C974F4' : '#FFB340', head = document.getElementById('coach-detail-header');
+    if (head) {
+        head.innerHTML = `<i data-lucide="award" class="absolute -top-6 -right-6 w-32 h-32 rotate-12 pointer-events-none opacity-20" style="color:${themeColor}"></i><div class="w-20 h-20 rounded-full border-4 mb-3 z-10 shadow-lg relative overflow-hidden" style="border-color:${themeColor}4D"><img src="${coach.avatar}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80';" class="w-full h-full object-cover"><div class="absolute inset-0 opacity-20" style="background-color:${themeColor}"></div></div><p class="text-xs text-textMuted leading-relaxed mb-3 z-10">${coach.description || coach.desc}</p><div class="flex gap-2 z-10">${coach.tags.map((t, i) => `<span class="text-[9px] px-2 py-1 rounded-full font-bold uppercase tracking-wider" style="color:${coach.tagColors[i]}; background-color:${coach.tagColors[i]}15; border: 1px solid ${coach.tagColors[i]}33">${t}</span>`).join('')}</div>`;
+    }
+    
+    const calGrid = document.getElementById('coach-calendar'); if (!calGrid) return; calGrid.innerHTML = ''; let targetBtnToClick = null;
+    const coachScheduleData = scheduleData || (typeof window.coachSchedules !== 'undefined' ? window.coachSchedules[coach.id] : null);
     calendarDaysInfo.forEach((day, index) => {
-        const dateStr = day.date.toString();
-        const has = coachScheduleData && coachScheduleData[dateStr];
-        const isBookedDate = currentBooking && currentBooking.coach.id === coach.id && currentBooking.date === dateStr;
-        const d = document.createElement('div');
-
+        const dateStr = day.date.toString(), has = coachScheduleData && coachScheduleData[dateStr], isBookedDate = currentBooking && currentBooking.coach.id === coach.id && currentBooking.date === dateStr, d = document.createElement('div');
         if (has) {
             d.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl cursor-pointer active:scale-95 transition-all';
-            if (isBookedDate) {
-                const tColor = currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340';
-                d.style.border = `1px solid ${tColor}`; d.style.backgroundColor = `${tColor}15`; d.style.color = tColor;
-                targetBtnToClick = d;
-            } else { d.className += ' bg-surfaceLight border border-transparent text-white'; }
+            if (isBookedDate) { const tColor = currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340'; d.style.border = `1px solid ${tColor}`; d.style.backgroundColor = `${tColor}15`; d.style.color = tColor; targetBtnToClick = d; } 
+            else { d.className += ' bg-surfaceLight border border-transparent text-white'; }
             d.onclick = () => selectCoachDate(dateStr, d);
-        } else {
-            d.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl bg-surfaceLight/30 border border-transparent text-textMuted/30 cursor-not-allowed';
-        }
-
+        } else { d.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl bg-surfaceLight/30 border border-transparent text-textMuted/30 cursor-not-allowed'; }
         let dotHtml = '<div class="w-1 h-1 mt-1"></div>';
-        if (isBookedDate) dotHtml = `<div class="w-1.5 h-1.5 rounded-full mt-1" style="background-color: ${currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340'}"></div>`;
-        else if (has) dotHtml = `<div class="w-1 h-1 rounded-full bg-[#47A1FF] mt-1"></div>`;
-
+        if (isBookedDate) dotHtml = `<div class="w-1.5 h-1.5 rounded-full mt-1" style="background-color: ${currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340'}"></div>`; else if (has) dotHtml = `<div class="w-1 h-1 rounded-full bg-[#47A1FF] mt-1"></div>`;
         d.innerHTML = `<span class="text-[11px] font-medium mb-1">${day.dayName.charAt(0)}</span><span class="text-xl font-bold">${day.date}</span>${dotHtml}`;
         calGrid.appendChild(d);
     });
-
     const sc = document.getElementById('coach-slots-container'); if (sc) sc.classList.add('hidden');
-    refreshIcons();
-    if (targetBtnToClick) setTimeout(() => targetBtnToClick.click(), 10);
+    refreshIcons(); if (targetBtnToClick) setTimeout(() => targetBtnToClick.click(), 10);
 }
 
 function selectCoachDate(dayStr, btnEl) {
     currentSelectedDate = dayStr; currentSelectedSlot = null;
     const cc = document.getElementById('coach-calendar');
-    if (cc) {
-        Array.from(cc.children).forEach(c => {
-            if (!c.classList.contains('cursor-not-allowed')) {
-                c.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl cursor-pointer active:scale-95 transition-all bg-surfaceLight border border-transparent text-white';
-                c.style.backgroundColor = ''; c.style.borderColor = ''; c.style.color = '';
-            }
-        });
-    }
-
-    btnEl.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl bg-white border border-transparent cursor-pointer active:scale-95 transition-all text-black';
+    if (cc) Array.from(cc.children).forEach(c => { if (!c.classList.contains('cursor-not-allowed')) { c.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl cursor-pointer active:scale-95 transition-all bg-surfaceLight border border-transparent text-white'; c.style.backgroundColor = ''; c.style.borderColor = ''; c.style.color = ''; } });
+    btnEl.className = 'snap-center flex flex-col items-center justify-center min-w-[64px] h-[76px] rounded-2xl border border-transparent cursor-pointer active:scale-95 transition-all cal-selected';
     
-    const cachedSchedule = window.coachSchedulesCache[currentSelectedCoach.id];
-    const defaultSchedule = typeof window.coachSchedules !== 'undefined' ? window.coachSchedules[currentSelectedCoach.id] : null;
-    const scheduleData = cachedSchedule || defaultSchedule;
-    const slots = scheduleData ? scheduleData[dayStr] : null;
-    const grid = document.getElementById('coach-slots');
+    const scheduleData = window.coachSchedulesCache[currentSelectedCoach.id] || (typeof window.coachSchedules !== 'undefined' ? window.coachSchedules[currentSelectedCoach.id] : null);
+    const slots = scheduleData ? scheduleData[dayStr] : null, grid = document.getElementById('coach-slots');
     if (!grid) return; grid.innerHTML = ''; if (!slots) return;
-
+    
     slots.forEach(s => {
-        const isBooked = currentBooking && currentBooking.coach.id === currentSelectedCoach.id && currentBooking.date === dayStr && currentBooking.time === s;
-        const isPast = isToday(parseInt(dayStr)) && isTimePassed(parseInt(dayStr), s);
-        const isDisabled = isPast && !isBooked;
-        const b = document.createElement('button');
-        
+        const isBooked = currentBooking && currentBooking.coach.id === currentSelectedCoach.id && currentBooking.date === dayStr && currentBooking.time === s, isPast = isToday(parseInt(dayStr)) && isTimePassed(parseInt(dayStr), s), isDisabled = isPast && !isBooked, b = document.createElement('button');
         if (isBooked) {
             const tColor = currentBooking.type === 'At-Home' ? '#C974F4' : '#FFB340';
-            b.className = 'py-3 rounded-xl text-xs font-bold text-black border-2 transition-all relative overflow-hidden shadow-lg shadow-black/50 flex items-center justify-center gap-1.5';
-            b.style.backgroundColor = tColor; b.style.borderColor = tColor;
+            b.className = 'py-3 rounded-xl text-xs font-bold text-black border-2 transition-all relative overflow-hidden shadow-lg shadow-black/50 flex items-center justify-center gap-1.5'; b.style.backgroundColor = tColor; b.style.borderColor = tColor;
             b.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-black"></i><span class="text-black drop-shadow-sm">${s}</span><span class="absolute text-[8px] uppercase font-black opacity-30 top-1 right-1.5 text-black">${currentBooking.type}</span>`;
             currentSelectedSlot = s;
-        } else if (isDisabled) {
-            b.className = 'py-3 rounded-xl bg-surfaceLight/30 text-xs font-bold text-textMuted/30 border border-transparent cursor-not-allowed';
-            b.innerText = s + ' (Past)';
-        } else {
-            b.className = 'py-3 rounded-xl bg-surfaceLight text-xs font-bold text-white border border-transparent transition-all hover:bg-surfaceLight/80';
-            b.innerText = s;
-        }
-
+        } else if (isDisabled) { b.className = 'py-3 rounded-xl bg-surfaceLight/30 text-xs font-bold text-textMuted/30 border border-transparent cursor-not-allowed'; b.innerText = s + ' (Past)'; } 
+        else { b.className = 'py-3 rounded-xl bg-surfaceLight text-xs font-bold text-white border border-transparent transition-all hover:bg-black/80 hover:text-white dark:hover:bg-white dark:hover:text-black'; b.innerText = s; }
+        
         if (!isDisabled) {
             b.onclick = () => {
                 currentSelectedSlot = s;
-                Array.from(grid.children).forEach(c => { if (!c.innerHTML.includes('check') && !c.innerText.includes('Past')) c.className = 'py-3 rounded-xl bg-surfaceLight text-xs font-bold text-white border border-transparent transition-all hover:bg-surfaceLight/80'; });
+                Array.from(grid.children).forEach(c => { if (!c.innerHTML.includes('check') && !c.innerText.includes('Past')) c.className = 'py-3 rounded-xl bg-surfaceLight text-xs font-bold text-white border border-transparent transition-all hover:bg-black/80 hover:text-white dark:hover:bg-white dark:hover:text-black'; });
                 if (!isBooked) b.className = 'py-3 rounded-xl text-xs font-bold text-[#47A1FF] border border-[#47A1FF] bg-[#47A1FF]/10 transition-all';
                 updateBookButton();
             };
-        }
-        grid.appendChild(b);
+        } grid.appendChild(b);
     });
-
     const sc = document.getElementById('coach-slots-container'); if (sc) sc.classList.remove('hidden');
     refreshIcons({root: grid}); setTimeout(() => updateBookButton(), 10);
 }
 
 function updateBookButton() {
-    const btn = document.getElementById('book-session-btn'), atBtn = document.getElementById('book-athome-btn');
-    if (!btn || !atBtn) return;
-    const hasAtHome = currentSelectedCoach && currentSelectedCoach.tags.includes('At-Home');
-    const isBookedSlot = currentBooking && currentSelectedCoach && currentBooking.coach.id === currentSelectedCoach.id && currentBooking.date === currentSelectedDate && currentBooking.time === currentSelectedSlot;
-
+    const btn = document.getElementById('book-session-btn'), atBtn = document.getElementById('book-athome-btn'); if (!btn || !atBtn) return;
+    const hasAtHome = currentSelectedCoach && currentSelectedCoach.tags.includes('At-Home'), isBookedSlot = currentBooking && currentSelectedCoach && currentBooking.coach.id === currentSelectedCoach.id && currentBooking.date === currentSelectedDate && currentBooking.time === currentSelectedSlot;
     if (isBookedSlot) {
-        btn.classList.remove('bg-surfaceLight', 'text-textMuted', 'pointer-events-none', 'bg-[#47A1FF]', 'w-full', 'flex-1'); 
-        btn.classList.add('bg-[#FF5C77]', 'text-white', 'active:scale-[0.98]');
+        btn.classList.remove('bg-surfaceLight', 'text-textMuted', 'pointer-events-none', 'bg-[#47A1FF]', 'w-full', 'flex-1'); btn.classList.add('bg-[#FF5C77]', 'text-white', 'active:scale-[0.98]');
         if (hasAtHome) btn.classList.add('flex-1'); else btn.classList.add('w-full');
-        btn.innerText = "Cancel Booking";
-        btn.onclick = () => {
-            cancelBooking(); btn.innerText = "Canceled"; btn.classList.replace('bg-[#FF5C77]', 'bg-surfaceLight'); btn.classList.replace('text-white', 'text-textMuted'); btn.classList.add('pointer-events-none');
-            setTimeout(() => updateBookButton(), 1000);
-        };
-        if (hasAtHome) { atBtn.classList.add('pointer-events-none', 'opacity-30'); atBtn.classList.remove('bg-[#C974F4]', 'text-white'); atBtn.classList.add('bg-surfaceLight', 'text-textMuted'); }
-        return;
+        btn.innerText = "Cancel Booking"; btn.onclick = () => { cancelBooking(); btn.innerText = "Canceled"; btn.classList.replace('bg-[#FF5C77]', 'bg-surfaceLight'); btn.classList.replace('text-white', 'text-textMuted'); btn.classList.add('pointer-events-none'); setTimeout(() => updateBookButton(), 1000); };
+        if (hasAtHome) { atBtn.classList.add('pointer-events-none', 'opacity-30'); atBtn.classList.remove('bg-[#C974F4]', 'text-white'); atBtn.classList.add('bg-surfaceLight', 'text-textMuted'); } return;
     }
-    
     if (currentSelectedDate && currentSelectedSlot) {
-        btn.classList.remove('bg-surfaceLight', 'text-textMuted', 'pointer-events-none', 'bg-[#FF5C77]', 'w-full', 'flex-1'); 
-        btn.classList.add('bg-[#47A1FF]', 'text-white', 'active:scale-[0.98]', hasAtHome ? 'flex-1' : 'w-full');
+        btn.classList.remove('bg-surfaceLight', 'text-textMuted', 'pointer-events-none', 'bg-[#FF5C77]', 'w-full', 'flex-1'); btn.classList.add('bg-[#47A1FF]', 'text-white', 'active:scale-[0.98]', hasAtHome ? 'flex-1' : 'w-full');
         btn.onclick = () => handleBookingConfirm(btn, 'In-Gym');
         if (!hasAtHome) btn.innerText = `Book ${currentSelectedSlot}`; else btn.innerText = "Book Gym";
-        
-        if (hasAtHome) { 
-            atBtn.classList.remove('bg-surfaceLight', 'text-textMuted', 'pointer-events-none', 'opacity-30'); 
-            atBtn.classList.add('bg-[#C974F4]', 'text-white', 'active:scale-[0.98]', 'flex-1'); 
-            atBtn.onclick = () => handleBookingConfirm(atBtn, 'At-Home'); 
-        }
+        if (hasAtHome) { atBtn.classList.remove('bg-surfaceLight', 'text-textMuted', 'pointer-events-none', 'opacity-30'); atBtn.classList.add('bg-[#C974F4]', 'text-white', 'active:scale-[0.98]', 'flex-1'); atBtn.onclick = () => handleBookingConfirm(atBtn, 'At-Home'); }
     } else {
-        btn.classList.add('bg-surfaceLight', 'text-textMuted', 'pointer-events-none'); 
-        btn.classList.remove('bg-[#47A1FF]', 'text-white', 'active:scale-[0.98]', 'bg-[#FF5C77]');
-        btn.onclick = null;
-        if (hasAtHome) { btn.classList.add('flex-1'); btn.classList.remove('w-full'); btn.innerText = "Book Gym"; } 
-        else { btn.classList.add('w-full'); btn.classList.remove('flex-1'); btn.innerText = "Select Slot"; }
-        
-        if (hasAtHome) { 
-            atBtn.classList.add('bg-surfaceLight', 'text-textMuted', 'pointer-events-none'); 
-            atBtn.classList.remove('bg-[#C974F4]', 'text-white', 'active:scale-[0.98]', 'opacity-30'); 
-            atBtn.onclick = null;
-        }
+        btn.classList.add('bg-surfaceLight', 'text-textMuted', 'pointer-events-none'); btn.classList.remove('bg-[#47A1FF]', 'text-white', 'active:scale-[0.98]', 'bg-[#FF5C77]'); btn.onclick = null;
+        if (hasAtHome) { btn.classList.add('flex-1'); btn.classList.remove('w-full'); btn.innerText = "Book Gym"; } else { btn.classList.add('w-full'); btn.classList.remove('flex-1'); btn.innerText = "Select Slot"; }
+        if (hasAtHome) { atBtn.classList.add('bg-surfaceLight', 'text-textMuted', 'pointer-events-none'); atBtn.classList.remove('bg-[#C974F4]', 'text-white', 'active:scale-[0.98]', 'opacity-30'); atBtn.onclick = null; }
     }
 }
 
@@ -1889,238 +1392,103 @@ async function handleBookingConfirm(clickedBtn, type) {
     clickedBtn.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 inline-block mr-2"></i> Confirmed';
     clickedBtn.classList.remove(originalBg, 'active:scale-[0.98]'); clickedBtn.classList.add('bg-[#5ED67A]', 'pointer-events-none');
     const btn = document.getElementById('book-session-btn'), atBtn = document.getElementById('book-athome-btn');
-
     if (clickedBtn === btn) atBtn.classList.add('pointer-events-none', 'opacity-30'); else btn.classList.add('pointer-events-none', 'opacity-30');
     refreshIcons();
-
     await bookCoachSession(currentSelectedCoach.id, currentSelectedDate, currentSelectedSlot, type);
-    currentBooking = { coach: currentSelectedCoach, date: currentSelectedDate, time: currentSelectedSlot, type: type };
-    saveUserData();
-    updateHomeBooking();
-
+    currentBooking = { coach: currentSelectedCoach, date: currentSelectedDate, time: currentSelectedSlot, type: type }; saveUserData(); updateHomeBooking();
     setTimeout(() => {
-        switchView('home');
-        clickedBtn.classList.add(originalBg, 'active:scale-[0.98]'); clickedBtn.classList.remove('bg-[#5ED67A]', 'pointer-events-none'); clickedBtn.innerText = originalText;
+        switchView('home'); clickedBtn.classList.add(originalBg, 'active:scale-[0.98]'); clickedBtn.classList.remove('bg-[#5ED67A]', 'pointer-events-none'); clickedBtn.innerText = originalText;
         btn.classList.remove('pointer-events-none', 'opacity-30'); atBtn.classList.remove('pointer-events-none', 'opacity-30');
         currentSelectedDate = null; currentSelectedSlot = null; updateBookButton();
     }, 1200);
 }
 
 async function renderGymChart() {
-    const el = document.getElementById('gymLoadChart');
-    if (typeof Chart === 'undefined' || !el) return;
-    const ctx = el.getContext('2d');
-    if (gymLoadChart) gymLoadChart.destroy();
-
-    const now = new Date();
-    const currentHour = now.getHours();
-    const isClosed = currentHour >= 23 || currentHour < 9;
-
-    const statusEl = document.getElementById('gym-status');
-    const countEl = document.getElementById('gym-count');
-    const unitEl = document.getElementById('gym-unit');
+    const el = document.getElementById('gymLoadChart'); if (typeof Chart === 'undefined' || !el) return;
+    
+    const now = new Date(), currentHour = now.getHours(), isClosed = currentHour >= 23 || currentHour < 9;
+    const statusEl = document.getElementById('gym-status'), countEl = document.getElementById('gym-count'), unitEl = document.getElementById('gym-unit');
     if (statusEl && countEl && unitEl) {
-        if (isClosed) {
-            statusEl.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-[#FF375F]"></div><span class="text-[10px] font-bold text-[#FF375F] uppercase tracking-wider">Closed</span>`;
-            countEl.innerText = '--';
-            unitEl.innerText = '';
-        } else {
-            statusEl.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-[#5ED67A] animate-pulse"></div><span class="text-[10px] font-bold text-[#5ED67A] uppercase tracking-wider">Live</span>`;
-        }
+        if (isClosed) { statusEl.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-[#FF375F]"></div><span class="text-[10px] font-bold text-[#FF375F] uppercase tracking-wider">Closed</span>`; countEl.innerText = '--'; unitEl.innerText = ''; } 
+        else { statusEl.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-[#5ED67A] animate-pulse"></div><span class="text-[10px] font-bold text-[#5ED67A] uppercase tracking-wider">Live</span>`; }
     }
 
     const gymData = await fetchGymLiveData();
-    const chartLabels = ['9AM', '11AM', '1PM', '3PM', '5PM', '7PM', '9PM', '11PM'];
-    let historicalData = new Array(8).fill(null);
-    let predictedData = new Array(8).fill(null);
+    const isLightMode = document.documentElement.classList.contains('light-theme');
+    const gridColor = isLightMode ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
+    const textColor = isLightMode ? '#666666' : '#8E8E93';
 
+    const ctx = el.getContext('2d');
+    const existingChart = Chart.getChart(ctx.canvas);
+    if (existingChart) existingChart.destroy();
+
+    const chartLabels = ['9AM', '11AM', '1PM', '3PM', '5PM', '7PM', '9PM', '11PM'];
+    let historicalData = new Array(8).fill(null), predictedData = new Array(8).fill(null);
     let currentHourIndex = -1;
-    if (currentHour > 22) currentHourIndex = 8;
-    else if (currentHour > 20) currentHourIndex = 7;
-    else if (currentHour > 18) currentHourIndex = 6;
-    else if (currentHour > 16) currentHourIndex = 5;
-    else if (currentHour > 14) currentHourIndex = 4;
-    else if (currentHour > 12) currentHourIndex = 3;
-    else if (currentHour > 10) currentHourIndex = 2;
-    else if (currentHour > 9) currentHourIndex = 1;
-    else if (currentHour >= 9) currentHourIndex = 0;
+    if (currentHour > 22) currentHourIndex = 8; else if (currentHour > 20) currentHourIndex = 7; else if (currentHour > 18) currentHourIndex = 6; else if (currentHour > 16) currentHourIndex = 5; else if (currentHour > 14) currentHourIndex = 4; else if (currentHour > 12) currentHourIndex = 3; else if (currentHour > 10) currentHourIndex = 2; else if (currentHour > 9) currentHourIndex = 1; else if (currentHour >= 9) currentHourIndex = 0;
 
     if (gymData && gymData.hourlyData) {
-        gymData.hourlyData.forEach((item, index) => {
-            if (index < 8) {
-                predictedData[index] = item.predicted;
-                if (currentHourIndex >= 0 && index < currentHourIndex) {
-                    historicalData[index] = item.current;
-                }
-            }
-        });
-    } else {
-        historicalData = [31, 22, 25, 40, 33, null, null, null];
-        predictedData = [31, 22, 25, 40, 33, 61, 50, 20];
-    }
-
-    if (isClosed) {
-        historicalData = new Array(8).fill(null);
-        predictedData = new Array(8).fill(null);
-    }
+        gymData.hourlyData.forEach((item, index) => { if (index < 8) { predictedData[index] = item.predicted; if (currentHourIndex >= 0 && index < currentHourIndex) historicalData[index] = item.current; } });
+    } else { historicalData = [31, 22, 25, 40, 33, null, null, null]; predictedData = [31, 22, 25, 40, 33, 61, 50, 20]; }
+    if (isClosed) { historicalData = new Array(8).fill(null); predictedData = new Array(8).fill(null); }
 
     gymLoadChart = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels: chartLabels,
-            datasets: [
-                {
-                    label: 'Load', data: historicalData, borderColor: '#47A1FF', backgroundColor: 'rgba(71, 161, 255, 0.1)',
-                    borderWidth: 3, fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#47A1FF'
-                },
-                {
-                    label: 'Predicted', data: predictedData, borderColor: '#FFB340',
-                    borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#FFB340'
-                }
-            ]
-        },
+        data: { labels: chartLabels, datasets: [{ label: 'Load', data: historicalData, borderColor: '#47A1FF', backgroundColor: 'rgba(71, 161, 255, 0.1)', borderWidth: 3, fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#47A1FF' }, { label: 'Predicted', data: predictedData, borderColor: '#FFB340', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#FFB340' }] },
         options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { 
-                legend: { display: !isClosed, labels: { boxWidth: 12, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
-                title: {
-                    display: isClosed,
-                    text: ' Closed (9AM - 11PM)',
-                    color: '#8E8E93',
-                    font: { size: 14, weight: 'bold' }
-                }
-            },
-            scales: { 
-                y: { display: !isClosed, min: 0, max: 80, beginAtZero: true }, 
-                x: { grid: { display: false, drawBorder: false }, ticks: { font: { size: 10 } } } 
-            }
+            plugins: { legend: { display: !isClosed, labels: { boxWidth: 12, usePointStyle: true, pointStyle: 'circle', font: { size: 10 }, color: textColor } }, title: { display: isClosed, text: ' Closed (9AM - 11PM)', color: textColor, font: { size: 14, weight: 'bold' } } },
+            scales: { y: { display: !isClosed, min: 0, max: 80, beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } }, x: { grid: { display: false, drawBorder: false }, ticks: { font: { size: 10 }, color: textColor } } }
         }
     });
 }
 
-window.onload = () => {
-    setGender('male');
-    switchView('home');
-    
-    if (currentCell && targetCell) {
-
-        document.getElementById('matrix-step-1').classList.add('hidden');
-        document.getElementById('vector-main-title').innerText = 'Your Protocol';
-        document.getElementById('matrix-arrow').style.color = themes[currentGender].glow;
-        document.getElementById('reset-btn').classList.remove('hidden');
-        
-        const buttons = document.querySelectorAll('#matrix-grid button');
-        buttons.forEach(btn => {
-            const btnId = btn.dataset.id;
-            if (btnId === currentCell.id) {
-                btn.style.borderColor = themes[currentGender].glow;
-                const nameEl = btn.querySelector('span.font-bold');
-                if (nameEl) nameEl.style.color = themes[currentGender].glow;
-                const dot = document.getElementById(`dot-${currentCell.id}`);
-                if (dot) dot.style.backgroundColor = themes[currentGender].glow;
-                const icon = document.getElementById(`icon-wrap-${currentCell.id}`);
-                if (icon) icon.style.opacity = '1';
-            }
-            if (btnId === targetCell.id) {
-                btn.style.borderColor = themes[currentGender].glow;
-                btn.style.boxShadow = `inset 0 0 0 2px ${themes[currentGender].glow}`;
-                const nameEl = btn.querySelector('span.font-bold');
-                if (nameEl) nameEl.style.color = '#fff';
-                const dot = document.getElementById(`dot-${targetCell.id}`);
-                if (dot) dot.style.backgroundColor = '#fff';
-                const icon = document.getElementById(`icon-wrap-${targetCell.id}`);
-                if (icon) icon.style.opacity = '1';
-            }
-        });
-        
-        document.getElementById('current-display').innerHTML = currentCell.name; 
-        document.getElementById('current-display').style.color = themes[currentGender].glow;
-        document.getElementById('target-display').innerHTML = targetCell.name; 
-        document.getElementById('target-display').style.color = themes[currentGender].glow;
-        
-        const currentImgSrc = currentGender === 'female' ? `images/f${currentCell.imgCode}.png` : `images/${currentCell.imgCode}.png`;
-        const targetImgSrc = currentGender === 'female' ? `images/f${targetCell.imgCode}.png` : `images/${targetCell.imgCode}.png`;
-        updateCardIcon('current-icon-container', currentImgSrc, 'rgba(255,255,255,0.05)');
-        updateCardIcon('target-icon-container', targetImgSrc, themes[currentGender].glowDim);
-        
-        refreshIcons();
-        calculateWithScalars();
-    } else {
-        refreshIcons();
-        if (currentCell) {
-
-            document.getElementById('reset-btn').classList.remove('hidden');
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+            if (lastChartValues) renderCharts(lastChartValues);
+            if (document.getElementById('view-gym').classList.contains('view-active')) renderGymChart();
+            updateHomeBooking();
         }
-    }
-    
-    updateHomeBooking();
-    updateHomeSelectedCourses();
-    updateHomeSummary();
+    });
+});
+observer.observe(document.documentElement, { attributes: true });
 
-    // Start Equipment Map Simulation
-    initEquipmentMap();
-    window.updateEquipmentStatus();
+window.onload = () => {
+    setGender('male'); switchView('home');
+    if (currentCell && targetCell) {
+        document.getElementById('matrix-step-1').classList.add('hidden'); document.getElementById('vector-main-title').innerText = 'Your Protocol'; document.getElementById('matrix-arrow').style.color = themes[currentGender].glow; document.getElementById('reset-btn').classList.remove('hidden');
+        document.querySelectorAll('#matrix-grid button').forEach(btn => {
+            const btnId = btn.dataset.id;
+            if (btnId === currentCell.id) { btn.style.borderColor = themes[currentGender].glow; const nameEl = btn.querySelector('span.font-bold'); if (nameEl) nameEl.style.color = themes[currentGender].glow; const dot = document.getElementById(`dot-${currentCell.id}`); if (dot) dot.style.backgroundColor = themes[currentGender].glow; const icon = document.getElementById(`icon-wrap-${currentCell.id}`); if (icon) icon.style.opacity = '1'; }
+            if (btnId === targetCell.id) { btn.style.borderColor = themes[currentGender].glow; btn.style.boxShadow = `inset 0 0 0 2px ${themes[currentGender].glow}`; const nameEl = btn.querySelector('span.font-bold'); if (nameEl) nameEl.style.color = '#fff'; const dot = document.getElementById(`dot-${targetCell.id}`); if (dot) dot.style.backgroundColor = '#fff'; const icon = document.getElementById(`icon-wrap-${targetCell.id}`); if (icon) icon.style.opacity = '1'; }
+        });
+        document.getElementById('current-display').innerHTML = currentCell.name; document.getElementById('current-display').style.color = themes[currentGender].glow; document.getElementById('target-display').innerHTML = targetCell.name; document.getElementById('target-display').style.color = themes[currentGender].glow;
+        updateCardIcon('current-icon-container', currentGender === 'female' ? `images/f${currentCell.imgCode}.png` : `images/${currentCell.imgCode}.png`, 'rgba(255,255,255,0.05)'); updateCardIcon('target-icon-container', currentGender === 'female' ? `images/f${targetCell.imgCode}.png` : `images/${targetCell.imgCode}.png`, themes[currentGender].glowDim);
+        refreshIcons(); calculateWithScalars();
+    } else { refreshIcons(); if (currentCell) document.getElementById('reset-btn').classList.remove('hidden'); }
+    
+    updateHomeBooking(); updateHomeSelectedCourses(); updateHomeSummary();
+    initEquipmentMap(); window.updateEquipmentStatus();
 };
 
-let workoutTimerInterval = null;
-let workoutElapsedSeconds = 0;
-let activeWorkoutKey = null;
-
+let workoutTimerInterval = null, workoutElapsedSeconds = 0, activeWorkoutKey = null;
 window.startWorkoutTimer = function(categoryKey, title, color) {
-    activeWorkoutKey = categoryKey;
-    workoutElapsedSeconds = 0;
-
-    document.getElementById('timer-title').innerText = title;
-    document.getElementById('timer-category').innerText = categoryKey;
-    document.getElementById('timer-category').style.color = color;
-    document.getElementById('timer-bg-glow').style.background = `radial-gradient(circle at center, ${color} 0%, transparent 70%)`;
-    document.getElementById('timer-pulse').style.border = `4px solid ${color}`;
-    document.getElementById('timer-display').innerText = '00:00';
-
-    const overlay = document.getElementById('workout-timer-overlay');
-    overlay.classList.remove('hidden');
-    overlay.classList.add('flex');
-    void overlay.offsetWidth;
-    overlay.classList.remove('opacity-0');
-
+    activeWorkoutKey = categoryKey; workoutElapsedSeconds = 0;
+    document.getElementById('timer-title').innerText = title; document.getElementById('timer-category').innerText = categoryKey; document.getElementById('timer-category').style.color = color; document.getElementById('timer-bg-glow').style.background = `radial-gradient(circle at center, ${color} 0%, transparent 70%)`; document.getElementById('timer-pulse').style.border = `4px solid ${color}`; document.getElementById('timer-display').innerText = '00:00';
+    const overlay = document.getElementById('workout-timer-overlay'); overlay.classList.remove('hidden'); overlay.classList.add('flex'); void overlay.offsetWidth; overlay.classList.remove('opacity-0');
     if (workoutTimerInterval) clearInterval(workoutTimerInterval);
-    workoutTimerInterval = setInterval(() => {
-        workoutElapsedSeconds++;
-        const m = String(Math.floor(workoutElapsedSeconds / 60)).padStart(2, '0');
-        const s = String(workoutElapsedSeconds % 60).padStart(2, '0');
-        document.getElementById('timer-display').innerText = `${m}:${s}`;
-    }, 1000);
+    workoutTimerInterval = setInterval(() => { workoutElapsedSeconds++; document.getElementById('timer-display').innerText = `${String(Math.floor(workoutElapsedSeconds / 60)).padStart(2, '0')}:${String(workoutElapsedSeconds % 60).padStart(2, '0')}`; }, 1000);
 };
 
 window.stopWorkoutTimer = function() {
     if (workoutTimerInterval) clearInterval(workoutTimerInterval);
-
-    const overlay = document.getElementById('workout-timer-overlay');
-    overlay.classList.add('opacity-0');
-    
-    setTimeout(() => {
-        overlay.classList.add('hidden');
-        overlay.classList.remove('flex');
-    }, 500);
-
-    if (activeWorkoutKey) {
-
-        const loggedMins = Math.max(1, Math.floor(workoutElapsedSeconds / 60));
-        
-        if (typeof globalCategoryLogged[activeWorkoutKey] !== 'undefined') {
-            globalCategoryLogged[activeWorkoutKey] += loggedMins;
-            updateRecommendedCards();
-            saveUserData();
-        }
-    }
+    const overlay = document.getElementById('workout-timer-overlay'); overlay.classList.add('opacity-0'); setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 500);
+    if (activeWorkoutKey) { const loggedMins = Math.max(1, Math.floor(workoutElapsedSeconds / 60)); if (typeof globalCategoryLogged[activeWorkoutKey] !== 'undefined') { globalCategoryLogged[activeWorkoutKey] += loggedMins; updateRecommendedCards(); saveUserData(); } }
     activeWorkoutKey = null;
 };
 
-
-window.renderCoachList = renderCoachList;
-window.openCoachDetail = openCoachDetail;
-window.coachesData = coachesData;
-window.weeklySchedulePlan = weeklySchedulePlan;
+window.renderCoachList = renderCoachList; window.openCoachDetail = openCoachDetail; window.coachesData = coachesData; window.weeklySchedulePlan = weeklySchedulePlan;
 </script>
 </body>
 </html>
