@@ -1,32 +1,19 @@
-# XJTLU CPT208 Group B3-4  GridFit - Smart Gym & Body Recomposition App
+# XJTLU CPT208 Group B3-4: GridFit - Smart Gym & Body Recomposition App
 
 GridFit is a full-stack gym management and personalized body recomposition application. It provides real-time gym load tracking, coach scheduling, and personalized workout protocols based on the user's current and target body metrics.
 
 ## Live Demo
 
-- **Online Preview:** (https://fitgrid-project.vercel.app/)
+- **Online Preview:** [GridFit on Vercel](https://fitgrid-project.vercel.app/)
 
 ## Individual Contributions
 
 | Team Member | Student ID | Role | Contributions | Contribution % |
-| --- | --- | --- | --- | :---: |
-| Shuaifei Fan | [2364597] | [Led "Motivation & Research" rationale.
-Synthesized 4 papers & 4 products.
-Defined stakeholders & Personas.
-Led Mid-term Poster production.] | 25% |
-| Haijin Xia | [2361793] | Conducted Usability Testing with 3 users.
-Documented "Before & After" refinements.
-Recorded High-Fi prototype screen captures.
-Produced the final 2-minute teaser video.| 25% |
-| Yifan Xu | [2364446] |Built the functional web prototype (Vercel).
-Programmed 3 "must-have" features.
-Designed System Architecture diagram.
-Managed GitHub repo and README.
- | 25% |
-| Zhichong Zhao | 2362984 |Mapped the User Journey.
-Led rapid ideation ("Crazy Eights").
-Conducted Design Alternatives comparison.
-Developed Low-Fi & High-Fi interfaces. | 25% |
+| :--- | :--- | :--- | :--- | :---: |
+| Shuaifei Fan | 2364597 | UX Researcher & PM | Led "Motivation & Research" rationale.<br>Synthesized 4 papers & 4 products.<br>Defined stakeholders & Personas.<br>Led Mid-term Poster production. | 25% |
+| Haijin Xia | 2361793 | QA & Media Editor | Conducted Usability Testing with 3 users.<br>Documented "Before & After" refinements.<br>Recorded High-Fi prototype screen captures.<br>Produced the final 2-minute teaser video. | 25% |
+| Yifan Xu | 2364446 | Lead Developer | Built the functional web prototype (Vercel).<br>Programmed 3 "must-have" features.<br>Designed System Architecture diagram.<br>Managed GitHub repo and README. | 25% |
+| Zhichong Zhao | 2362984 | UI/UX Designer | Mapped the User Journey.<br>Led rapid ideation ("Crazy Eights").<br>Conducted Design Alternatives comparison.<br>Developed Low-Fi & High-Fi interfaces. | 25% |
 
 ## Setup Instructions
 
@@ -58,11 +45,11 @@ The frontend is built with vanilla web technologies and can be served statically
 
 ## Related Documents
 
-- `docs/project-vision.md` - 项目的设计初衷与产品愿景
-- `docs/poster-presentation.pdf` - 答辩展示海报与视觉图表设计
-- `docs/defense-script.md` - 项目答辩演讲稿与常见问题准备
+- `docs/project-vision.md` - Project design rationale and product vision.
+- `docs/poster-presentation.pdf` - Defense presentation poster and visual charts.
+- `docs/defense-script.md` - Defense presentation script and FAQ preparation.
 
 ## Vibe Coding Logs
 
 AI-assisted coding and prompts used during the development of the Body Matrix and UI components are stored in the `/ai-logs` directory. 
-- `/ai-logs/ai-logs` - 核心逻辑生成的 Prompt 历史记录与排错过程
+- `/ai-logs/ai-logs` - Prompt history and debugging process for core logic generation.
