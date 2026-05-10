@@ -10,10 +10,23 @@ GridFit is a full-stack gym management and personalized body recomposition appli
 
 | Team Member | Student ID | Role | Contributions | Contribution % |
 | --- | --- | --- | --- | :---: |
-| [你的名字] | [学号] | [例如: UI/UX & Core Logic] | [例如: 负责 3x3 矩阵交互逻辑与沉浸式计时器开发] | 25% |
-| Haijin Xia | [学号] | [例如: Frontend Development] | [简述具体负责的功能，例如：教练排班系统开发] | 25% |
-| Yifan Xu | [学号] | [例如: Data Visualization] | [简述具体负责的功能，例如：使用 Chart.js 渲染健身房人流预测图表] | 25% |
-| Yiyang Lu | [学号] | [例如: Testing & Documentation] | [简述具体负责的功能，例如：项目可用性测试与素材整理] | 25% |
+| Shuaifei Fan | [2364597] | [Led "Motivation & Research" rationale.
+Synthesized 4 papers & 4 products.
+Defined stakeholders & Personas.
+Led Mid-term Poster production.] | 25% |
+| Haijin Xia | [2361793] | Conducted Usability Testing with 3 users.
+Documented "Before & After" refinements.
+Recorded High-Fi prototype screen captures.
+Produced the final 2-minute teaser video.| 25% |
+| Yifan Xu | [2364446] |Built the functional web prototype (Vercel).
+Programmed 3 "must-have" features.
+Designed System Architecture diagram.
+Managed GitHub repo and README.
+ | 25% |
+| Zhichong Zhao | 2362984 |Mapped the User Journey.
+Led rapid ideation ("Crazy Eights").
+Conducted Design Alternatives comparison.
+Developed Low-Fi & High-Fi interfaces. | 25% |
 
 ## Setup Instructions
 
