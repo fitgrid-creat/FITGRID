@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>FITGRID</title>
+    <title>RECOMPO</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -34,7 +34,6 @@
         function generateMockGymData() {
             const now = new Date();
             const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
             let currentHourIndex = -1;
             if (currentHour >= 22) currentHourIndex = 7;
             else if (currentHour >= 20) currentHourIndex = 6;
@@ -118,7 +117,6 @@
             for (let i = 0; i < 7; i++) {
                 const date = new Date(monday);
                 date.setDate(monday.getDate() + i);
-                const dateStr = date.toISOString().split('T')[0];
                 
                 if (days[i] === 'Wed') {
                     schedule[days[i]] = [];
@@ -155,6 +153,8 @@
             if (data) {
                 gymLiveDataCache = data;
                 updateGymDisplay(data);
+                // Sync equipment status with latest live count
+                window.updateEquipmentStatus && window.updateEquipmentStatus();
             }
         }
 
@@ -248,6 +248,39 @@
         
         .pt-safe { padding-top: calc(1rem + var(--safe-top)); }
         .pb-safe { padding-bottom: calc(5rem + var(--safe-bottom)); }
+
+        /* Equipment Map Styles */
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 4 / 6;
+            background: #050505;
+        }
+
+        .equipment {
+            position: absolute;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .status-idle svg {
+            color: #ffffff;
+            filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 2px rgba(255, 255, 255, 1));
+        }
+
+        .status-in-use svg {
+            color: #1a1a1a;
+            stroke: #333;
+            stroke-width: 0.5px;
+            filter: none;
+            opacity: 0.8;
+        }
+
+        .grid-bg {
+            fill: url(#grid);
+        }
     </style>
 </head>
 <body class="antialiased select-none overflow-x-hidden">
@@ -268,7 +301,7 @@
 
 <div class="relative z-10 max-w-lg mx-auto px-5 pt-28 pb-40">
 
-<main id="view-home" class="view-section view-active space-y-5">
+    <main id="view-home" class="view-section view-active space-y-5">
         <div id="home-empty-state" class="premium-card p-6 relative group cursor-pointer" onclick="switchView('vector')">
             <i data-lucide="dna" class="absolute -top-6 -right-6 w-32 h-32 text-[#FF5C77]/10 rotate-12 transition-transform duration-500 group-hover:scale-110 pointer-events-none"></i>
             <div class="relative z-10 flex flex-col items-center text-center py-4">
@@ -303,13 +336,11 @@
                         <div class="home-chart-container h-[80px]"><canvas id="homeMicroChart"></canvas></div>
                     </div>
                 </div>
-                
 
                 <div class="mt-6 pt-5 border-t border-white/5 flex justify-between items-center">
                     <div class="flex flex-col"><span class="text-[10px] text-textMuted uppercase tracking-wider font-semibold">Weekly Target</span><span id="home-total-time" class="text-xl font-bold text-white">360 min</span></div>
                     <button onclick="switchView('plan')" class="px-4 py-2 bg-white text-black text-[11px] font-bold rounded-full">View Plan</button>
                 </div>
-                
             </div>
         </div>
 
@@ -373,6 +404,111 @@
                 </div>
             </div>
             <div class="chart-container h-[220px] w-full"><canvas id="gymLoadChart"></canvas></div>
+            
+            <button onclick="switchView('equipment')" class="w-full py-4 mt-6 rounded-xl bg-white/10 border border-white/10 text-white font-bold text-sm active:scale-[0.98] transition-all hover:bg-white/20 flex items-center justify-center gap-2">
+                <i data-lucide="scan-line" class="w-4 h-4"></i> View Live Radar
+            </button>
+        </div>
+    </main>
+
+    <!-- New Full View for Equipment Radar -->
+    <main id="view-equipment" class="view-section space-y-5">
+        <div class="premium-card p-1 pb-6 overflow-hidden">
+            <div class="map-wrapper mx-auto rounded-[20px] overflow-hidden border-2 border-white/5 relative shadow-[0_0_30px_rgba(0,0,0,0.8)_inset]" id="map-container">
+                
+                <!-- Enhanced HTML Legend & Status Panel -->
+                <div class="absolute top-4 left-2 bg-black/60 backdrop-blur-md p-3.5 rounded-xl border border-white/10 z-20 shadow-lg">
+                    <h4 class="text-[9px] font-bold text-textMuted uppercase tracking-widest mb-3 border-b border-white/10 pb-1.5">Floor Status</h4>
+                    <div class="space-y-2.5 text-[11px] font-medium">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-1.5 rounded-sm bg-white shadow-[0_0_8px_#fff]"></div> 
+                                <span>Available</span>
+                            </div>
+                            <span id="equip-avail-count" class="font-bold text-white">--</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-1.5 rounded-sm bg-[#1a1a1a] border border-[#333]"></div> 
+                                <span class="text-textMuted">In Use</span>
+                            </div>
+                            <span id="equip-use-count" class="font-bold text-textMuted">--</span>
+                        </div>
+                        
+                        <div class="w-full h-px bg-white/5 my-2"></div>
+                        
+                        <div class="flex items-center gap-2 text-[#8E8E93]">
+                            <svg viewBox="0 0 50 24" class="w-5 h-auto fill-current">
+                                <rect x="2" y="2" width="46" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+                                <rect x="10" y="4" width="35" height="16" fill-opacity="0.2"/>
+                                <line x1="20" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
+                                <line x1="30" y1="4" x2="30" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
+                                <line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
+                                <rect x="4" y="6" width="4" height="12" rx="1" fill="currentColor"/>
+                                <path d="M 25 2 L 10 2 L 8 6" fill="none" stroke="currentColor" stroke-width="1"/>
+                                <path d="M 25 22 L 10 22 L 8 18" fill="none" stroke="currentColor" stroke-width="1"/>
+                            </svg>
+                            <span class="text-[10px]">Treadmill</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-[#8E8E93]">
+                            <svg viewBox="0 0 50 24" class="w-6 h-auto fill-current">
+                                <rect x="4" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+                                <rect x="36" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+                                <rect x="14" y="10" width="22" height="4" fill-opacity="0.3" stroke="currentColor" stroke-width="0.5"/>
+                                <line x1="14" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/>
+                                <line x1="36" y1="12" x2="30" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/>
+                                <circle cx="20" cy="12" r="1.5" fill="currentColor"/>
+                                <circle cx="30" cy="12" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <span class="text-[10px]">Cable</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-[#8E8E93]">
+                            <svg viewBox="0 0 50 24" class="w-5 h-auto fill-current">
+                                <rect x="4" y="11" width="40" height="2" fill="currentColor"/>
+                                <ellipse cx="40" cy="12" rx="6" ry="8" fill-opacity="0.15" stroke="currentColor" stroke-width="1"/>
+                                <line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5"/>
+                                <line x1="34" y1="12" x2="46" y2="12" stroke="currentColor" stroke-width="0.5"/>
+                                <rect x="18" y="8" width="8" height="8" rx="2" fill="currentColor"/>
+                                <rect x="32" y="7" width="3" height="10" rx="0.5" fill="currentColor"/>
+                                <line x1="26" y1="12" x2="40" y2="12" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1,1"/>
+                                <rect x="25" y="9" width="2" height="6" fill="currentColor"/>
+                            </svg>
+                            <span class="text-[10px]">Rower</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-[#8E8E93]">
+                            <svg viewBox="0 0 50 24" class="w-6 -ml-0.5 h-auto fill-current">
+                                <rect x="5" y="6" width="38" height="12" rx="4" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+                                <circle cx="38" cy="12" r="5" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
+                                <circle cx="38" cy="12" r="2" fill="currentColor"/>
+                                <rect x="15" y="7" width="10" height="3" rx="1" fill="currentColor"/>
+                                <rect x="22" y="14" width="10" height="3" rx="1" fill="currentColor"/>
+                                <line x1="20" y1="8" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/>
+                                <line x1="27" y1="15" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/>
+                                <path d="M 38 12 L 45 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M 38 12 L 45 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            <span class="text-[10px]">Elliptical</span>
+                        </div>
+                    </div>
+                </div>
+
+                <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="grid" width="5" height="5" patternUnits="userSpaceOnUse">
+                            <path d="M 5 0 L 0 0 0 5" fill="none" stroke="#111" stroke-width="0.3"/>
+                        </pattern>
+                        <clipPath id="gym-clip">
+                            <path d="M 30 5 L 70 5 L 70 60 L 95 60 L 95 145 L 5 145 L 5 80 L 30 80 Z" />
+                        </clipPath>
+                    </defs>
+                    
+                    <rect width="100" height="150" fill="#050505" clip-path="url(#gym-clip)"/>
+                    <rect width="100" height="150" class="grid-bg" clip-path="url(#gym-clip)"/>
+                    <path d="M 30 5 L 70 5 L 70 60 L 95 60 L 95 145 L 5 145 L 5 80 L 30 80 Z" fill="none" stroke="#333" stroke-width="0.8" />
+                    <path d="M 35 145 C 35 125 65 125 65 145" fill="none" stroke="#222" stroke-width="0.5" />
+                </svg>
+                <div id="equipment-layer"></div>
+            </div>
         </div>
     </main>
 
@@ -493,7 +629,7 @@ function refreshIcons(options) {
     }
 }
 
-const viewTitles = { 'home': 'Summary', 'gym': 'Live Gym', 'vector': 'Matrix', 'plan': 'Schedule', 'coach': 'Private Classes' };
+const viewTitles = { 'home': 'Summary', 'gym': 'Live Gym', 'vector': 'Matrix', 'plan': 'Schedule', 'coach': 'Private Classes', 'equipment': 'Live Radar' };
 const themes = {
     male: { glow: '#47A1FF', glowDim: 'rgba(71, 161, 255, 0.15)', chartMacro: ['#47A1FF', '#5ED67A'], chartMicro: ['#3A3A3C', '#47A1FF', '#C974F4', '#FFB340'] },
     female: { glow: '#FF5C77', glowDim: 'rgba(255, 92, 119, 0.15)', chartMacro: ['#FF5C77', '#C974F4'], chartMicro: ['#3A3A3C', '#FF5C77', '#C974F4', '#FFB340'] }
@@ -513,11 +649,11 @@ const gridBaseData = [
 ];
 
 const courseDatabase = {
-    'RESISTANCE': { type: 'STRENGTH', categoryTitle: 'Resistance Training', specificTitles: ['Heavy Lifting', 'Hypertrophy'], color: '#C974F4', icon: 'dumbbell', images: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=400&q=80' },
-    'METCON': { type: 'METCON', categoryTitle: 'Metabolic Resistance', specificTitles: ['Kettlebell Advanced', 'Machine Circuit'], color: '#FFB340', icon: 'flame', images: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=400&q=80' },
-    'Z2': { type: 'Z2', categoryTitle: 'Fat Oxidation (Z2)', specificTitles: ['Steady Cycling', 'Incline Walk'], color: '#47A1FF', icon: 'bike', images: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80' },
-    'HIIT': { type: 'HIIT', categoryTitle: 'Anaerobic Intervals', specificTitles: ['Sprints', 'Explosive Cycling'], color: '#FF5C77', icon: 'zap', images: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=400&q=80' },
-    'Z1': { type: 'Z1', categoryTitle: 'Active Recovery', specificTitles: ['Slow Walk', 'Static Stretching'], color: '#5ED67A', icon: 'leaf', images: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80' }
+    'RESISTANCE': { type: 'STRENGTH', categoryTitle: 'Resistance Training', specificTitles: ['Heavy Lifting', 'Hypertrophy'], color: '#C974F4', icon: 'dumbbell', image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=400&q=80' },
+    'METCON': { type: 'METCON', categoryTitle: 'Metabolic Resistance', specificTitles: ['Kettlebell Advanced', 'Machine Circuit'], color: '#FFB340', icon: 'flame', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=400&q=80' },
+    'Z2': { type: 'Z2', categoryTitle: 'Fat Oxidation (Z2)', specificTitles: ['Steady Cycling', 'Incline Walk'], color: '#47A1FF', icon: 'bike', image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80' },
+    'HIIT': { type: 'HIIT', categoryTitle: 'Anaerobic Intervals', specificTitles: ['Sprints', 'Explosive Cycling'], color: '#FF5C77', icon: 'zap', image: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=400&q=80' },
+    'Z1': { type: 'Z1', categoryTitle: 'Active Recovery', specificTitles: ['Slow Walk', 'Static Stretching'], color: '#5ED67A', icon: 'leaf', image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80' }
 };
 
 const bfpThresholds = { male: { 1: '< 15%', 2: '15-25%', 3: '> 25%' }, female: { 1: '< 22%', 2: '23-35%', 3: '> 35%' } };
@@ -525,7 +661,6 @@ let currentCell = null, targetCell = null;
 let macroChart = null, microChart = null, homeMacroChart = null, homeMicroChart = null, gymLoadChart = null;
 const TOTAL_TARGET_MINUTES = 360;
 
-// Add tracking for logged minutes
 let globalCategoryLogged = { 'RESISTANCE': 0, 'METCON': 0, 'Z2': 0, 'HIIT': 0, 'Z1': 0 };
 window.currentFinalPlan = null;
 
@@ -533,6 +668,165 @@ let weeklySchedulePlan = {};
 let selectedDayIndex = 0; 
 let selectedCourses = []; 
 let currentBooking = null;
+
+// Equipment Map State & SVGs
+const EQUIP_STATUS = {
+    IDLE: { id: 'idle', class: 'status-idle' },
+    IN_USE: { id: 'in_use', class: 'status-in-use' }
+};
+
+const EQUIP_SVGS = {
+    TREADMILL: `
+        <svg viewBox="0 0 50 24" class="w-6 h-auto fill-current">
+            <rect x="2" y="2" width="46" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+            <rect x="10" y="4" width="35" height="16" fill-opacity="0.2"/>
+            <line x1="20" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
+            <line x1="30" y1="4" x2="30" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
+            <line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
+            <rect x="4" y="6" width="4" height="12" rx="1" fill="currentColor"/>
+            <path d="M 25 2 L 10 2 L 8 6" fill="none" stroke="currentColor" stroke-width="1"/>
+            <path d="M 25 22 L 10 22 L 8 18" fill="none" stroke="currentColor" stroke-width="1"/>
+        </svg>`,
+    CABLE: `
+        <svg viewBox="0 0 50 24" class="w-7 h-auto fill-current">
+            <rect x="4" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+            <rect x="36" y="2" width="10" height="20" rx="2" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+            <rect x="14" y="10" width="22" height="4" fill-opacity="0.3" stroke="currentColor" stroke-width="0.5"/>
+            <line x1="14" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/>
+            <line x1="36" y1="12" x2="30" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="1,1"/>
+            <circle cx="20" cy="12" r="1.5" fill="currentColor"/>
+            <circle cx="30" cy="12" r="1.5" fill="currentColor"/>
+        </svg>`,
+    ELLIPTICAL: `
+        <svg viewBox="0 0 50 24" class="w-7 h-auto fill-current">
+            <rect x="5" y="6" width="38" height="12" rx="4" fill-opacity="0.1" stroke="currentColor" stroke-width="0.5"/>
+            <circle cx="38" cy="12" r="5" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
+            <circle cx="38" cy="12" r="2" fill="currentColor"/>
+            <rect x="15" y="7" width="10" height="3" rx="1" fill="currentColor"/>
+            <rect x="22" y="14" width="10" height="3" rx="1" fill="currentColor"/>
+            <line x1="20" y1="8" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/>
+            <line x1="27" y1="15" x2="38" y2="12" stroke="currentColor" stroke-width="0.8"/>
+            <path d="M 38 12 L 45 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M 38 12 L 45 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>`,
+    ROWER: `
+        <svg viewBox="0 0 50 24" class="w-6 h-auto fill-current">
+            <rect x="4" y="11" width="40" height="2" fill="currentColor"/>
+            <ellipse cx="40" cy="12" rx="6" ry="8" fill-opacity="0.15" stroke="currentColor" stroke-width="1"/>
+            <line x1="40" y1="4" x2="40" y2="20" stroke="currentColor" stroke-width="0.5"/>
+            <line x1="34" y1="12" x2="46" y2="12" stroke="currentColor" stroke-width="0.5"/>
+            <rect x="18" y="8" width="8" height="8" rx="2" fill="currentColor"/>
+            <rect x="32" y="7" width="3" height="10" rx="0.5" fill="currentColor"/>
+            <line x1="26" y1="12" x2="40" y2="12" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1,1"/>
+            <rect x="25" y="9" width="2" height="6" fill="currentColor"/>
+        </svg>`
+};
+
+let equipMachines = [];
+
+function initEquipmentMap() {
+    const layer = document.getElementById('equipment-layer');
+    if (!layer) return;
+    
+    equipMachines = [];
+    // Left col: Treadmills
+    for (let i = 0; i < 14; i++) {
+        equipMachines.push({
+            id: `TR-${String(i+1).padStart(2, '0')}`, typeHtml: EQUIP_SVGS.TREADMILL,
+            x: 35, y: 10 + i * 5.2, status: EQUIP_STATUS.IDLE
+        });
+    }
+    // Middle col: Cable Crossovers
+    for (let i = 0; i < 14; i++) {
+        equipMachines.push({
+            id: `CB-${String(i+1).padStart(2, '0')}`, typeHtml: EQUIP_SVGS.CABLE,
+            x: 50, y: 10 + i * 5.2, status: EQUIP_STATUS.IDLE
+        });
+    }
+    // Right col: Rowers and Ellipticals
+    for (let i = 0; i < 14; i++) {
+        const isRower = i < 7;
+        equipMachines.push({
+            id: isRower ? `RW-${String(i + 1).padStart(2, '0')}` : `EL-${String(i - 6).padStart(2, '0')}`,
+            typeHtml: isRower ? EQUIP_SVGS.ROWER : EQUIP_SVGS.ELLIPTICAL,
+            x: 65, y: 10 + i * 5.2, status: EQUIP_STATUS.IDLE
+        });
+    }
+    renderEquipmentMap();
+}
+
+function renderEquipmentMap() {
+    const layer = document.getElementById('equipment-layer');
+    if (!layer) return;
+    layer.innerHTML = '';
+    equipMachines.forEach(m => {
+        const div = document.createElement('div');
+        div.className = `equipment ${m.status.class}`;
+        div.style.left = `${m.x}%`;
+        div.style.top = `${m.y}%`;
+        div.innerHTML = m.typeHtml;
+        layer.appendChild(div);
+    });
+}
+
+// Pseudo-random generator with string seed
+function getSeededRandom(seedStr) {
+    let hash = 0;
+    for (let i = 0; i < seedStr.length; i++) {
+        hash = ((hash << 5) - hash) + seedStr.charCodeAt(i);
+        hash |= 0;
+    }
+    const x = Math.sin(hash++) * 10000;
+    return x - Math.floor(x);
+}
+
+window.updateEquipmentStatus = function() {
+    if (!equipMachines || equipMachines.length === 0) return;
+    
+    const now = new Date();
+    const hour = now.getHours();
+    const minutes = now.getMinutes();
+    const isClosed = hour >= 23 || hour < 9;
+    
+    // Create seed based on current 30-min block
+    const halfHourPeriod = Math.floor(minutes / 30);
+    const timeSeedStr = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${hour}-${halfHourPeriod}`;
+    
+    let availCount = 0;
+    let useCount = 0;
+    
+    if (isClosed) {
+        equipMachines.forEach(m => {
+            m.status = EQUIP_STATUS.IN_USE; 
+            useCount++;
+        });
+    } else {
+        let currentLoad = window.gymLiveDataCache ? window.gymLiveDataCache.currentCount : 30;
+        // Calculate probability of being IDLE inversely to gym load (assumed max cap around 70)
+        let idleProb = (70 - currentLoad) / 70;
+        idleProb = Math.max(0.1, Math.min(0.9, idleProb)); // Keep it reasonable
+
+        equipMachines.forEach(m => {
+            const seed = `${timeSeedStr}-${m.id}`;
+            const rand = getSeededRandom(seed);
+            
+            if (rand < idleProb) {
+                m.status = EQUIP_STATUS.IDLE;
+                availCount++;
+            } else {
+                m.status = EQUIP_STATUS.IN_USE;
+                useCount++;
+            }
+        });
+    }
+    
+    renderEquipmentMap();
+    
+    const availEl = document.getElementById('equip-avail-count');
+    const useEl = document.getElementById('equip-use-count');
+    if (availEl) availEl.innerText = availCount;
+    if (useEl) useEl.innerText = useCount;
+}
 
 function saveUserData() {
     localStorage.setItem('gym_selectedCourses', JSON.stringify(selectedCourses));
@@ -589,6 +883,8 @@ function isToday(date) {
 function goBack() {
     if (document.getElementById('view-coach-detail').classList.contains('view-active')) {
         switchView('coach'); 
+    } else if (document.getElementById('view-equipment').classList.contains('view-active')) {
+        switchView('gym'); 
     } else {
         switchView('home');
     }
@@ -614,7 +910,7 @@ function switchView(id) {
         titleEl.className = 'text-[32px] font-bold transition-all duration-300 tracking-tight leading-none'; 
     } else { 
         backBtn.classList.remove('hidden'); 
-        if (id === 'coach-detail') {
+        if (id === 'coach-detail' || id === 'equipment') {
             titleEl.className = 'text-xl ml-1 font-bold transition-all duration-300'; 
         } else {
             titleEl.className = 'text-[32px] font-bold transition-all duration-300 tracking-tight leading-none'; 
@@ -629,6 +925,7 @@ function switchView(id) {
     
     if (id === 'coach') renderCoachList();
     if (id === 'gym') setTimeout(renderGymChart, 50);
+    if (id === 'equipment') { setTimeout(() => window.updateEquipmentStatus(), 50); }
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -685,7 +982,7 @@ function initGrid() {
         const btn = document.createElement('button');
         btn.className = 'matrix-btn bg-surfaceLight rounded-[14px] w-full aspect-square text-left relative overflow-hidden flex flex-col justify-end border-2 border-transparent p-0 group';
         btn.dataset.id = d.id; 
-        const imgSrc = currentGender === 'female' ? `images/f${d.imgCode}.png` : `images/${d.imgCode}.png`;
+        const imgSrc = currentGender === 'female' ? `f${d.imgCode}.png` : `${d.imgCode}.png`;
         
         btn.innerHTML = `
             <div class="absolute inset-0 transition-opacity duration-300 opacity-60 group-hover:opacity-90 z-0" id="icon-wrap-${d.id}">
@@ -707,7 +1004,7 @@ function updateCardIcon(containerId, source, color) {
     const container = document.getElementById(containerId);
     if (!container) return;
     if (source.endsWith('.png')) {
-        const fallbackUrl = 'https://imagess.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=300&q=80';
+        const fallbackUrl = 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=300&q=80';
         container.innerHTML = `<img src="${source}" onerror="this.onerror=null; this.src='${fallbackUrl}'" class="w-full h-full object-cover opacity-20 transition-all duration-300 mix-blend-screen" style="filter: grayscale(30%);">`;
     } else { 
         container.innerHTML = `<i data-lucide="${source}" class="w-24 h-24" style="color: ${color}"></i>`; 
@@ -717,7 +1014,7 @@ function updateCardIcon(containerId, source, color) {
 
 function handleSelect(data, btn, isInit = false) {
     const t = themes[currentGender];
-    const imgSrc = currentGender === 'female' ? `images/f${data.imgCode}.png` : `images/${data.imgCode}.png`;
+    const imgSrc = currentGender === 'female' ? `f${data.imgCode}.png` : `${data.imgCode}.png`;
     
     if (!currentCell) {
         currentCell = data; 
@@ -965,7 +1262,6 @@ function updateRecommendedCards() {
 
     grid.innerHTML = '';
     
-    // Dynamically calculate total time and update homepage target
     let totalLogged = 0;
     for (let key in globalCategoryLogged) {
         totalLogged += globalCategoryLogged[key];
@@ -984,7 +1280,6 @@ function updateRecommendedCards() {
         const isDone = targetMins > 0 ? (loggedMins >= targetMins) : (loggedMins > 0);
         const remainingMins = Math.max(0, targetMins - loggedMins);
 
-
         const mainNumber = targetMins > 0 ? remainingMins : loggedMins;
         const subText = targetMins > 0 ? (isDone ? 'DONE' : 'min left') : 'min done';
 
@@ -992,7 +1287,7 @@ function updateRecommendedCards() {
         card.className = 'snap-center premium-card-light w-[130px] min-w-[130px] p-4 flex flex-col justify-between aspect-[3/4] shrink-0 relative overflow-hidden group transition-all duration-500';
         card.innerHTML = `
             <div class="absolute inset-0 z-0">
-                <img src="${c.images}" class="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-300">
+                <img src="${c.image}" class="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-300">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#1C1C1E] via-[#1C1C1E]/60 to-[#1C1C1E]/10"></div>
                 ${isDone ? `<div class="absolute inset-0 bg-[#5ED67A]/20 backdrop-blur-[2px] transition-all"></div>` : ''}
             </div>
@@ -1079,7 +1374,6 @@ function updateHomeSelectedCourses() {
     const card = document.getElementById('home-course-card'), list = document.getElementById('home-selected-courses-list');
     if (!card || !list) return;
     
-    // If no plan generated (not calibrated), hide panel
     if (!targetCell) { 
         card.classList.add('hidden'); 
         return; 
@@ -1109,7 +1403,6 @@ function updateHomeSelectedCourses() {
         </div>
     `;
 
-    // Divider
     if (selectedCourses.length > 0) {
         html += `<div class="w-full h-px bg-white/10 my-4"></div>`;
     }
@@ -1156,7 +1449,7 @@ function updateTimeline(idx) {
                     <div class="premium-card-light p-4 border transition-all duration-300 flex justify-between items-center gap-2 relative overflow-hidden" style="${isSel ? `border-color: ${c.color};` : 'border-color: rgba(255,255,255,0.05);'}">
                         
                         <div class="absolute inset-0 z-0">
-                            <img src="${c.images}" class="w-full h-full object-cover transition-opacity duration-300 ${isSel ? 'opacity-40' : 'opacity-20'}">
+                            <img src="${c.image}" class="w-full h-full object-cover transition-opacity duration-300 ${isSel ? 'opacity-40' : 'opacity-20'}">
                             <div class="absolute inset-0 bg-gradient-to-r from-[#1C1C1E] via-[#1C1C1E]/80 to-[#1C1C1E]/20"></div>
                             ${isSel ? `<div class="absolute inset-0 mix-blend-overlay opacity-40" style="background-color: ${c.color}"></div>` : ''}
                         </div>
@@ -1251,7 +1544,7 @@ const coachesData = [
     { id: 'c1', name: 'Wei Li', avatar: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80', desc: 'Focuses on practical strength for daily life. Great for beginners looking to build a sustainable routine without intimidating equipment.', tags: ['Strength', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
     { id: 'c2', name: 'Siyu Chen', avatar: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=150&q=80', desc: 'Helps you fix your posture and lose fat effectively. She provides easy-to-follow cardio plans you can do right in your living room.', tags: ['Fat Loss', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] },
     { id: 'c3', name: 'Hao Wang', avatar: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=150&q=80', desc: 'Friendly mobility coach who helps you recover from sitting at a desk all day. Focuses on stretching and moving pain-free.', tags: ['Recovery', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
-    { id: 'c4', name: 'Jian Zhao', avatar: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=150&q=80', desc: 'Passionate about body FITGRIDsition. He breaks down complex exercises into simple steps to help you tone up safely.', tags: ['Hypertrophy', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
+    { id: 'c4', name: 'Jian Zhao', avatar: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=150&q=80', desc: 'Passionate about body recomposition. He breaks down complex exercises into simple steps to help you tone up safely.', tags: ['Hypertrophy', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
     { id: 'c5', name: 'Min Zhang', avatar: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=150&q=80', desc: 'Energetic HIIT instructor who keeps you motivated. Expect sweaty, fun sessions that get your heart rate up quickly.', tags: ['HIIT', 'In-Gym'], tagColors: ['#FFB340', '#FFB340'] },
     { id: 'c6', name: 'Yue Lin', avatar: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=150&q=80', desc: 'Gentle yoga and core instructor.', tags: ['Yoga', 'At-Home'], tagColors: ['#C974F4', '#C974F4'] }
 ];
@@ -1744,14 +2037,13 @@ window.onload = () => {
             }
         });
         
-        // Update display
         document.getElementById('current-display').innerHTML = currentCell.name; 
         document.getElementById('current-display').style.color = themes[currentGender].glow;
         document.getElementById('target-display').innerHTML = targetCell.name; 
         document.getElementById('target-display').style.color = themes[currentGender].glow;
         
-        const currentImgSrc = currentGender === 'female' ? `images/f${currentCell.imgCode}.png` : `images/${currentCell.imgCode}.png`;
-        const targetImgSrc = currentGender === 'female' ? `images/f${targetCell.imgCode}.png` : `images/${targetCell.imgCode}.png`;
+        const currentImgSrc = currentGender === 'female' ? `f${currentCell.imgCode}.png` : `${currentCell.imgCode}.png`;
+        const targetImgSrc = currentGender === 'female' ? `f${targetCell.imgCode}.png` : `${targetCell.imgCode}.png`;
         updateCardIcon('current-icon-container', currentImgSrc, 'rgba(255,255,255,0.05)');
         updateCardIcon('target-icon-container', targetImgSrc, themes[currentGender].glowDim);
         
@@ -1768,6 +2060,10 @@ window.onload = () => {
     updateHomeBooking();
     updateHomeSelectedCourses();
     updateHomeSummary();
+
+    // Start Equipment Map Simulation
+    initEquipmentMap();
+    window.updateEquipmentStatus();
 };
 
 let workoutTimerInterval = null;
@@ -1804,7 +2100,6 @@ window.stopWorkoutTimer = function() {
     if (workoutTimerInterval) clearInterval(workoutTimerInterval);
 
     const overlay = document.getElementById('workout-timer-overlay');
-    // Only add opacity attribute for fade out, don't remove flex to prevent layout collapse
     overlay.classList.add('opacity-0');
     
     setTimeout(() => {
@@ -1818,7 +2113,6 @@ window.stopWorkoutTimer = function() {
         
         if (typeof globalCategoryLogged[activeWorkoutKey] !== 'undefined') {
             globalCategoryLogged[activeWorkoutKey] += loggedMins;
-            // Real-time update Plan progress
             updateRecommendedCards();
             saveUserData();
         }
