@@ -153,7 +153,6 @@
             if (data) {
                 gymLiveDataCache = data;
                 updateGymDisplay(data);
-                // Sync equipment status with latest live count
                 window.updateEquipmentStatus && window.updateEquipmentStatus();
             }
         }
@@ -249,7 +248,6 @@
         .pt-safe { padding-top: calc(1rem + var(--safe-top)); }
         .pb-safe { padding-bottom: calc(5rem + var(--safe-bottom)); }
 
-        /* Equipment Map Styles */
         .map-wrapper {
             position: relative;
             width: 100%;
@@ -411,12 +409,10 @@
         </div>
     </main>
 
-    <!-- New Full View for Equipment Radar -->
     <main id="view-equipment" class="view-section space-y-5">
         <div class="premium-card p-1 pb-6 overflow-hidden">
             <div class="map-wrapper mx-auto rounded-[20px] overflow-hidden border-2 border-white/5 relative shadow-[0_0_30px_rgba(0,0,0,0.8)_inset]" id="map-container">
                 
-                <!-- Enhanced HTML Legend & Status Panel -->
                 <div class="absolute top-4 left-2 bg-black/60 backdrop-blur-md p-3.5 rounded-xl border border-white/10 z-20 shadow-lg">
                     <h4 class="text-[9px] font-bold text-textMuted uppercase tracking-widest mb-3 border-b border-white/10 pb-1.5">Floor Status</h4>
                     <div class="space-y-2.5 text-[11px] font-medium">
@@ -982,7 +978,7 @@ function initGrid() {
         const btn = document.createElement('button');
         btn.className = 'matrix-btn bg-surfaceLight rounded-[14px] w-full aspect-square text-left relative overflow-hidden flex flex-col justify-end border-2 border-transparent p-0 group';
         btn.dataset.id = d.id; 
-        const imgSrc = currentGender === 'female' ? `f${d.imgCode}.png` : `${d.imgCode}.png`;
+        const imgSrc = currentGender === 'female' ? `images/f${d.imgCode}.png` : `images/${d.imgCode}.png`;
         
         btn.innerHTML = `
             <div class="absolute inset-0 transition-opacity duration-300 opacity-60 group-hover:opacity-90 z-0" id="icon-wrap-${d.id}">
@@ -1014,7 +1010,7 @@ function updateCardIcon(containerId, source, color) {
 
 function handleSelect(data, btn, isInit = false) {
     const t = themes[currentGender];
-    const imgSrc = currentGender === 'female' ? `f${data.imgCode}.png` : `${data.imgCode}.png`;
+    const imgSrc = currentGender === 'female' ? `images/f${data.imgCode}.png` : `images/${data.imgCode}.png`;
     
     if (!currentCell) {
         currentCell = data; 
@@ -2042,8 +2038,8 @@ window.onload = () => {
         document.getElementById('target-display').innerHTML = targetCell.name; 
         document.getElementById('target-display').style.color = themes[currentGender].glow;
         
-        const currentImgSrc = currentGender === 'female' ? `f${currentCell.imgCode}.png` : `${currentCell.imgCode}.png`;
-        const targetImgSrc = currentGender === 'female' ? `f${targetCell.imgCode}.png` : `${targetCell.imgCode}.png`;
+        const currentImgSrc = currentGender === 'female' ? `images/f${currentCell.imgCode}.png` : `images/${currentCell.imgCode}.png`;
+        const targetImgSrc = currentGender === 'female' ? `images/f${targetCell.imgCode}.png` : `images/${targetCell.imgCode}.png`;
         updateCardIcon('current-icon-container', currentImgSrc, 'rgba(255,255,255,0.05)');
         updateCardIcon('target-icon-container', targetImgSrc, themes[currentGender].glowDim);
         
