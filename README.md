@@ -13,7 +13,7 @@ GridFit is a full-stack gym management and personalized body recomposition appli
 ##  Setup Instructions
 
 
-### 1. Frontend Setup
+### Frontend Setup
 The frontend is built with vanilla web technologies and can be served statically.
 
 1. **Do not double-click the HTML file** to open it directly (this causes CORS issues when fetching data). Instead, use a local web server.
