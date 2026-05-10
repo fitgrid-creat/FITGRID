@@ -10,10 +10,10 @@ GridFit is a full-stack gym management and personalized body recomposition appli
 
 | Team Member | Student ID | Role | Contributions | Contribution % |
 | :--- | :--- | :--- | :--- | :---: |
-| Shuaifei Fan | 2364597 | UX Researcher & PM | Led "Motivation & Research" rationale.<br>Synthesized 4 papers & 4 products.<br>Defined stakeholders & Personas.<br>Led Mid-term Poster production. | 25% |
+| Shuaifei Fan | 2362984 | UX Researcher & PM | Led "Motivation & Research" rationale.<br>Synthesized 4 papers & 4 products.<br>Defined stakeholders & Personas.<br>Led Mid-term Poster production. | 25% |
 | Haijin Xia | 2361793 | QA & Media Editor | Conducted Usability Testing with 3 users.<br>Documented "Before & After" refinements.<br>Recorded High-Fi prototype screen captures.<br>Produced the final 2-minute teaser video. | 25% |
-| Yifan Xu | 2364446 | Lead Developer | Built the functional web prototype (Vercel).<br>Programmed 3 "must-have" features.<br>Designed System Architecture diagram.<br>Managed GitHub repo and README. | 25% |
-| Zhichong Zhao | 2362984 | UI/UX Designer | Mapped the User Journey.<br>Led rapid ideation ("Crazy Eights").<br>Conducted Design Alternatives comparison.<br>Developed Low-Fi & High-Fi interfaces. | 25% |
+|Xiyu Zhang| 2364446 | Lead Developer | Built the functional web prototype (Vercel).<br>Programmed 3 "must-have" features.<br>Designed System Architecture diagram.<br>Managed GitHub repo and README. | 25% |
+| Zhichong Zhao | 2364597 | UI/UX Designer | Mapped the User Journey.<br>Led rapid ideation ("Crazy Eights").<br>Conducted Design Alternatives comparison.<br>Developed Low-Fi & High-Fi interfaces. | 25% |
 
 ## Setup Instructions
 
