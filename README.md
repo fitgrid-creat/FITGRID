@@ -1,4 +1,4 @@
-# XJTLU CPT208 Group C3-4: GridFit - Smart Gym & Body Recomposition App
+# XJTLU CPT208 Group C3-4: FitGrid - Smart Gym & Body Recomposition App
 
 GridFit is a full-stack gym management and personalized body recomposition application. It provides real-time gym load tracking, coach scheduling, and personalized workout protocols based on the user's current and target body metrics.
 
