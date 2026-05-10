@@ -43,11 +43,7 @@ The frontend is built with vanilla web technologies and can be served statically
 * **Coach Scheduling**: Browse available coaches, view their schedules, and book in-gym or at-home sessions.
 * **Workout Timer**: Built-in full-screen immersive timer to track workout sessions.
 
-## Related Documents
 
-- `docs/project-vision.md` - Project design rationale and product vision.
-- `docs/poster-presentation.pdf` - Defense presentation poster and visual charts.
-- `docs/defense-script.md` - Defense presentation script and FAQ preparation.
 
 ## Vibe Coding Logs
 
