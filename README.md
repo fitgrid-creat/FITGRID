@@ -17,7 +17,7 @@ GridFit is a full-stack gym management and personalized body recomposition appli
 The frontend is built with vanilla web technologies and can be served statically.
 
 1. **Do not double-click the HTML file** to open it directly (this causes CORS issues when fetching data). Instead, use a local web server.
-2. Navigate to the frontend directory containing `24pre.html`.
+2. Navigate to the frontend directory containing `index.html`.
 3. Start a simple HTTP server. For example:
    * Using Python: `python -m http.server 3000`
    * Using Node.js: `npx http-server -p 3000`
