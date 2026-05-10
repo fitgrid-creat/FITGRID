@@ -1,6 +1,6 @@
 # Vibe Coding Logs: Phase 1 - Architecture & PRD
 
-> *Note: The following logs represent iterative conversations with AI assistants during the initial planning, PRD definition, and architecture phase of GridFit.*
+> *Note: The following logs represent iterative conversations with AI assistants during the initial planning, PRD definition, and architecture phase of FitGrid.*
 
 ## 1. Initial PRD and Core Mechanics
 
@@ -8,7 +8,7 @@
 > This is a smart Body Recomposition Web App designed for the modern fitness demographic. Please assist me in building the project.
 > 
 > ### Project Overview
-> * **Product Positioning:** A minimalist, immersive personal fitness management and scheduling tool, codenamed **GridFit**.
+> * **Product Positioning:** A minimalist, immersive personal fitness management and scheduling tool, codenamed **FitGrid**.
 > * **Development Strategy:** Adopt the MVP (Minimum Viable Product) model. It must be a **"Zero-Build"** pure front-end architecture. No Node.js, no Webpack, and not even a real backend database. We will implement complete interaction through a single-file HTML combined with LocalStorage, ensuring anyone can experience it in a browser just by double-clicking the file.
 > * **Core Pain Point Solution:** Traditional fitness apps cause "data anxiety." We refuse to force users to enter height, weight, or calculate BMI/BMR right at the start.
 > * **Core Mechanism:** Introduce the **"Body Recomposition Matrix."** Through a 3x3 visual grid, users can intuitively select their "Current Status" and "Target Status." The underlying algorithm will automatically translate this into a scientific training ratio.
