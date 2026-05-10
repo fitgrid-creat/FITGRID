@@ -1,4 +1,4 @@
-# XJTLU CPT208 Group B3-4: GridFit - Smart Gym & Body Recomposition App
+# XJTLU CPT208 Group C3-4: GridFit - Smart Gym & Body Recomposition App
 
 GridFit is a full-stack gym management and personalized body recomposition application. It provides real-time gym load tracking, coach scheduling, and personalized workout protocols based on the user's current and target body metrics.
 
@@ -44,6 +44,56 @@ The frontend is built with vanilla web technologies and can be served statically
 * **Workout Timer**: Built-in full-screen immersive timer to track workout sessions.
 
 
+## Data Handling Evidence
+
+### 1. Local Data Persistence (localStorage)
+The system ensures user data survives page refreshes by syncing the application state with the browser's local storage, simulating a persistent database experience.
+- **Mechanism**: Utilizes `JSON.stringify` for serialization and `JSON.parse` for hydration during the `loadUserData()` lifecycle.
+- **Code Snippet**: 
+    ```javascript
+    // Persisting course selection and booking status
+    localStorage.setItem('gym_selectedCourses', JSON.stringify(selectedCourses));
+    // Hydrating state on DOMContentLoaded
+    const savedData = JSON.parse(localStorage.getItem('gym_selectedCourses'));
+    ```
+
+### 2. Core Business Logic & State Calibration
+The "Body Matrix" calibration relies on tracking sequential interaction states to trigger complex calculation algorithms.
+- **Mechanism**: A two-step selection handler tracks `currentCell` and `targetCell`. Once both states are validated, it triggers the `calculateWithScalars()` logic to generate the workout split.
+- **Code Snippet**:
+    ```javascript
+    if (!currentCell) { 
+        currentCell = data; // Record baseline
+    } else { 
+        targetCell = data; // Record target
+        calculateWithScalars(); // Generate dynamic plan
+    }
+    ```
+
+### 3. UI & View State Management
+The application employs a reactive-like approach to manage themes and view routing without a heavy framework.
+- **Mechanism**: A centralized `switchView(id)` function manages DOM visibility, while the `currentGender` state reactively updates the CSS variables defined in the `themes` object.
+- **Code Snippet**:
+    ```javascript
+    // View Routing
+    function switchView(id) {
+        document.querySelectorAll('.view-panel').forEach(v => v.classList.remove('view-active'));
+        document.getElementById('view-' + id).classList.add('view-active');
+    }
+    ```
+
+### 4. Real-time Progress Accumulation
+Workout data is not just a timer; it is a state that accumulates into the user's historical profile.
+- **Mechanism**: Converts `workoutElapsedSeconds` into cumulative minutes and updates the `globalCategoryLogged` state dictionary before triggering a UI re-render.
+- **Code Snippet**:
+    ```javascript
+    function stopWorkoutTimer() {
+        let loggedMins = Math.floor(workoutElapsedSeconds / 60);
+        globalCategoryLogged[activeWorkoutKey] += loggedMins;
+        updateRecommendedCards(); // Trigger UI sync
+        saveUserData(); // Commit to localStorage
+    }
+    ```
 
 ## Vibe Coding Logs
 
